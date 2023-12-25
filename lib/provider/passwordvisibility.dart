@@ -62,12 +62,20 @@ Future<void> loginDataInFirebase()async{
     if(response.networkStatus==NetworkStatus.sucess){
       isUserExist=response.data;
       setLoginStatus(NetworkStatus.sucess);
+      saveValueToSharedPreferences(isUserExist);//isUserExit ko value yo case ma true aauxa 
     }else if(response.networkStatus==NetworkStatus.error){
       errormessage=response.errormessage;
       setLoginStatus(NetworkStatus.error);
     }
 
 
+  }// Writing data 
+  saveValueToSharedPreferences(bool value)async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance(); //prefs just variable matra ho
+    await prefs.setBool('isUserExist', value); //repeat vaneko key ya sidhei value ko thauma isUserExist pathauda ni hunxa
+
+
   }
+
   
 }
