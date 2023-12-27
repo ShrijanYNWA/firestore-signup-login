@@ -1,8 +1,11 @@
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
+import 'package:firebase/view/carousel.dart';
 import 'package:firebase/view/dashboard.dart';
+import 'package:firebase/view/forgetpassword.dart';
 import 'package:firebase/view/login.dart';
-import 'package:firebase/view/studentform.dart';
+import 'package:firebase/view/navbar.dart';
+import 'package:firebase/view/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +49,8 @@ ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibili
             colorScheme: ColorScheme.fromSeed(seedColor:colorstr),
             useMaterial3: true,
           ),
-          home: isUserExist? Dashboard():LoginUi(),
+          home: Dashboard(),
+          //isUserExist? Dashboard():LoginUi(),
         ),
       ),
     );

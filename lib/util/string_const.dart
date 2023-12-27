@@ -20,3 +20,4 @@ String EmailaddressStr="Email Address";
 String loginStr="LOG IN";
 String ForgetpassStr="Forget Password?";
 String SignupStr="Sign Up";
+                                              

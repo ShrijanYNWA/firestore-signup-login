@@ -7,11 +7,14 @@ import 'package:firebase/helper/helper.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/dashboard.dart';
-import 'package:firebase/view/studentform.dart';
+import 'package:firebase/view/forgetpassword.dart';
+import 'package:firebase/view/navbar.dart';
+import 'package:firebase/view/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LoginUi extends StatefulWidget {
+   
   LoginUi({super.key});
 
   @override
@@ -19,6 +22,10 @@ class LoginUi extends StatefulWidget {
 }
 
 class _LoginUiState extends State<LoginUi> {
+  final RegExp emailRegex =
+      RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+        final RegExp passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$');
+
   ApiService apiService = ApiServiceImpl();
   final _formKey = GlobalKey<FormState>();
 
@@ -102,9 +109,14 @@ class _LoginUiState extends State<LoginUi> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return emailValidationStr;
-                        } else {
-                          return null;
                         }
+                         else if(!emailRegex.hasMatch(value)){
+                              return 'Please enter a valid email';
+
+                         }
+                    
+                          return null;
+                        
                       },
                       onChanged: (value) {
                         passwordVisibility.email = value;
@@ -122,9 +134,11 @@ class _LoginUiState extends State<LoginUi> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return passwordValidationStr;
-                        } else {
-                          return null;
+                        } else if(!passwordRegex.hasMatch(value)) {
+                              return 'Must have 8 char(include uppercase,lowercase & number)';
+
                         }
+                        return null;
                       },
                       onChanged: (value) {
                         passwordVisibility.password = value;
@@ -149,10 +163,10 @@ class _LoginUiState extends State<LoginUi> {
                                     "Successfully Logged in", context);
                                 //navigate to dashboard
                                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard())); //yesle back garda sidhei login page purauxa
-
+                                //push matra garne vaye yo mathi ko code 
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                        builder: (context) => Dashboard()),
+                                        builder: (context) => Navbar()),
                                     (Route<dynamic> route) => false); //push and remove until le chai back garda sidhei apps lai close garxa
                               } else if (passwordVisibility.loginStatus ==
                                       NetworkStatus.sucess &&
@@ -183,6 +197,8 @@ class _LoginUiState extends State<LoginUi> {
                         TextButton(
                             onPressed: () {
                               //  print("forget password button is pressed");
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Forgetpassword(),));
+
                             },
                             child: Text(
                               ForgetpassStr,
@@ -195,6 +211,8 @@ class _LoginUiState extends State<LoginUi> {
                         TextButton(
                             onPressed: () {
                               //  print("Signup password button is pressed");
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => StudentForm(),));
+
                             },
                             child: Text(SignupStr,
                                 style: TextStyle(
