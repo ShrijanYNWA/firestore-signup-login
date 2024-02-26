@@ -10,7 +10,10 @@ import 'package:firebase/view/dashboard.dart';
 import 'package:firebase/view/forgetpassword.dart';
 import 'package:firebase/view/navbar.dart';
 import 'package:firebase/view/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class LoginUi extends StatefulWidget {
@@ -220,7 +223,31 @@ class _LoginUiState extends State<LoginUi> {
                                     fontSize: 16,
                                     decoration: TextDecoration.underline)))
                       ],
-                    )
+                    ),
+                 
+                 Row(
+                   children: [
+                      ElevatedButton(
+            onPressed: () {
+              googleLogin(context);
+
+            },
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width*0.7,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(FontAwesomeIcons.google),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Text("Login with Google")
+                ],
+              ),
+            ))
+                     
+                   ],
+                 )
                   ],
                 ),
               ),
@@ -230,4 +257,54 @@ class _LoginUiState extends State<LoginUi> {
       ],
     );
   }
+   googleLogin(BuildContext context)async{
+        String? token;
+
+   FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount? googleSignInAccount =
+        await googleSignIn.signIn();
+
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      try {
+        final UserCredential userCredential =
+            await auth.signInWithCredential(credential);
+
+        user = userCredential.user;
+        print(user!.phoneNumber);
+        // var token= await user.getIdToken();
+        // print(token);
+        //ya mathi ko 2 line ra tal ko same ho
+        await user.getIdToken().then((value) { //aaba value ma Idtoken basxa 
+          token=value;
+          print(token);
+        },);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'account-exists-with-different-credential') {
+          // handle the error here
+        }
+        else if (e.code == 'invalid-credential') {
+          // handle the error here
+        }
+      } catch (e) {
+
+        // handle the error here
+      }
+      if(token!=null){//not equal 
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Navbar()), 
+        (route) => false);
+      }
+    }}
+
 }

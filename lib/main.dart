@@ -1,36 +1,52 @@
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
+import 'package:firebase/view/UploadImage.dart';
 import 'package:firebase/view/carousel.dart';
 import 'package:firebase/view/dashboard.dart';
+import 'package:firebase/view/drawer.dart';
 import 'package:firebase/view/forgetpassword.dart';
 import 'package:firebase/view/login.dart';
 import 'package:firebase/view/navbar.dart';
+import 'package:firebase/view/otp.dart';
+import 'package:firebase/view/plumber.dart';
+import 'package:firebase/view/profile.dart';
+import 'package:firebase/view/see_all.dart';
 import 'package:firebase/view/signup.dart';
+import 'package:firebase/view/test.dart';
+import 'package:firebase/view/testloginwithg.dart';
+import 'package:firebase/view/upload.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+    
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+   MyApp({super.key});
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
   void initState(){
-    readValueFromSharedPreference();
+    notificationSetting();
+    listenNotification();
+  //  readValueFromSharedPreference();
     super.initState();
   }
   bool isUserExist=false;
@@ -39,20 +55,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibility(),)
+ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibility(),),
 
       ],
-      child: Consumer<Passwordvisibility>(builder: (context, passwordVisibility, child) =>  MaterialApp( debugShowCheckedModeBanner: false,
+      child:  MaterialApp( debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
           
             colorScheme: ColorScheme.fromSeed(seedColor:colorstr),
             useMaterial3: true,
           ),
-          home: Dashboard(),
-          //isUserExist? Dashboard():LoginUi(),
+          home:Dashboard(),
+               // isUserExist? Dashboard():LoginUi(),
         ),
-      ),
+      
     );
   }
 
@@ -62,6 +78,29 @@ isUserExist = prefs.getBool('isUserExit')??false ; //yedi user exit ko value kay
 setState(() {
 });
 isUserExist; // isUserExist ko value change vairako ko kura lai UI ma update garaune 
+  }
+  notificationSetting()async{
+
+NotificationSettings settings = await messaging.requestPermission(
+  alert: true,
+  announcement: false,
+  badge: true,
+  carPlay: false,
+  criticalAlert: false,
+  provisional: false,
+  sound: true,
+);
+
+print('User granted permission: ${settings.authorizationStatus}');
+  }
+  listenNotification(){
+    FirebaseMessaging.onMessage.listen((RemoteMessage message){
+print(message);
+    });
+
+  }
+  getToken()async{
+    String? token = await messaging.getToken();//yo device ko token yeslai init state ma call garne
   }
 }
 

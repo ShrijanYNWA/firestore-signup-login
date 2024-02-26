@@ -2,7 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/carousel.dart';
+import 'package:firebase/view/drawer.dart';
+import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/profile.dart';
+import 'package:firebase/view/see_all.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -16,11 +20,13 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  User? user;
   final List<String> imageUrl = [
     "asset/images/15%discount.jpg",
-    "asset/images/carpenter.jpg",
+    "asset/images/Carpenter1.jpeg",
     "asset/images/water.jpg",
-    "asset/images/clean.jpg"
+    "asset/images/clean.jpg",
+    "asset/images/photography.jpg",
   ];
 
 //  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -33,16 +39,21 @@ class _DashboardState extends State<Dashboard> {
   // ];
 
   @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      
 // //bottomNavigationBar:
 
 //  navbar(),
-      body: SafeArea(
-        
+appBar: AppBar(
 
-        
+),
+drawer: Mydrawer(),
+      body: SafeArea(
         child: ui(),
       ),
     );
@@ -59,7 +70,9 @@ class _DashboardState extends State<Dashboard> {
   Widget ui() {
     return Stack(
       children: [
+        
         Container(
+          
           height: height(1, context),
           width: width(1, context),
           decoration: BoxDecoration(color: colorstr),
@@ -79,10 +92,14 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       CircleAvatar(
                           backgroundColor: Colors.white,
-                          child: Icon(
-                            FontAwesomeIcons.homeUser,
-                            color: colorstr,
-                            size: 25,
+                          child: GestureDetector(onTap: () =>
+                          // Open the drawer when the button is pressed
+              Scaffold.of(context).openDrawer(),
+                            child: Icon(
+                              FontAwesomeIcons.homeUser,
+                              color: colorstr,
+                              size: 25,
+                            ),
                           )),
                       SizedBox(
                         width: width(0.04, context),
@@ -107,7 +124,9 @@ class _DashboardState extends State<Dashboard> {
                                 SizedBox(
                                   width: width(0.02, context),
                                 ),
-                                Text("Shrijan",
+                                Text(
+                                    "${user?.displayName ?? 'User'}", //welcome wala part
+
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white))
                               ],
@@ -129,7 +148,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 Container(
-                 color: Colors.transparent,
+                  color: Colors.transparent,
                   width: width(1, context),
                   height: height(0.20, context),
                   child: carousel(context), // carousel ya call vaxa
@@ -169,41 +188,45 @@ class _DashboardState extends State<Dashboard> {
                             ))),
                   ),
                 ),
-                SizedBox(height: height(0.015, context),),
-                Padding(
-                  padding: const EdgeInsets.only(left: 4,right: 4),
-                  child: Row(
-                      children: [
-                        Text(
-                          "Categories",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                            child: Text("See All",
-                                style: TextStyle(color: Colors.white)),
-                                onTap: () {
-                                  
-                                },
-                                ),
-                      ],
-                    ),
+                SizedBox(
+                  height: height(0.015, context),
                 ),
-
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, right: 4),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Categories",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      Spacer(),
+                      GestureDetector(
+                        child: Text("See All",
+                            style: TextStyle(color: Colors.white)),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SeeAll(),
+                              ));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                   padding: EdgeInsets.only(top: 15),
                   // 4th categories wala
-                  height:height(0.34, context),
+                  height: height(0.34, context),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.transparent),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(children: [
-                    
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, right: 8),
                       child: Column(
@@ -215,62 +238,69 @@ class _DashboardState extends State<Dashboard> {
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/plumber.png",
-                                                                                      fit: BoxFit.cover,
+                                        child: Image.asset(
+                                          "asset/images/plumber.png",
+                                          fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Plumber",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500))
+                                    Text("Plumber",
+                                        style: TextStyle(
+                                            color: colorstr,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ),
                                 onTap: () {
-                                  
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlumberDetailsPage(),));
                                 },
                               ),
                               GestureDetector(
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/painter.png",
+                                        child: Image.asset(
+                                          "asset/images/painter.png",
                                           fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Painter",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500))
+                                    Text("Painter",
+                                        style: TextStyle(
+                                            color: colorstr,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  
-                                },
+                                onTap: () {},
                               ),
                               GestureDetector(
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/carpenter.png",
+                                        child: Image.asset(
+                                          "asset/images/carpenter.png",
                                           fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Carpenter",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500))
+                                    Text("Carpenter",
+                                        style: TextStyle(
+                                            color: colorstr,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  
-                                },
+                                onTap: () {},
                               ),
                             ],
                           ),
-                          SizedBox(height: height(0.015, context),),
+                          SizedBox(
+                            height: height(0.015, context),
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -278,59 +308,63 @@ class _DashboardState extends State<Dashboard> {
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/watertank.png",
+                                        child: Image.asset(
+                                          "asset/images/watertank.png",
                                           fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Water tanker",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500),)
+                                    Text(
+                                      "Water tanker",
+                                      style: TextStyle(
+                                          color: colorstr,
+                                          fontWeight: FontWeight.w500),
+                                    )
                                   ],
                                 ),
-                                onTap: () {
-                                  
-                                },
+                                onTap: () {},
                               ),
                               GestureDetector(
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/mechanic.png",
-                                         
+                                        child: Image.asset(
+                                          "asset/images/mechanic.png",
                                           fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Mechanics",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500))
+                                    Text("Mechanics",
+                                        style: TextStyle(
+                                            color: colorstr,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  
-                                },
+                                onTap: () {},
                               ),
                               GestureDetector(
                                 child: Column(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                            Colors.lightGreen[200],
+                                        backgroundColor: Colors.lightGreen[200],
                                         radius: 50,
-                                        child: Image.asset("asset/images/cleaning.png",
+                                        child: Image.asset(
+                                          "asset/images/cleaning.png",
                                           fit: BoxFit.cover,
                                           height: 50,
                                           width: 50,
                                         )),
-                                    Text("Cleaning",style: TextStyle(color: colorstr,fontWeight: FontWeight.w500))
+                                    Text("Cleaning",
+                                        style: TextStyle(
+                                            color: colorstr,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  
-                                },
+                                onTap: () {},
                               ),
                             ],
                           ),
@@ -358,7 +392,7 @@ class _DashboardState extends State<Dashboard> {
   }
 //   navbar(){
 //     return  CurvedNavigationBar(
-      
+
 //       index: _selectedPage,
 //       key: _bottomNavigationKey,
 //       items: <Widget>[
@@ -372,11 +406,11 @@ class _DashboardState extends State<Dashboard> {
 //           });
 //         },
 //       );
-//   } 
+//   }
 //    Widget getCurrentPage() {
 //     return _pageOptions[_selectedPage];
 //   }
-Widget carousel(context) {
+  Widget carousel(context) {
     return CarouselSlider(
       options: CarouselOptions(
         autoPlay: true,
@@ -408,5 +442,36 @@ Widget carousel(context) {
       ).toList(),
     );
   }
+  Widget drawer(){
+  return Drawer(
+     child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        DrawerHeader(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Text(
+            'Welcome, ${user?.displayName ?? 'Guest'}!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.exit_to_app),
+          title: Text('Logout'),
+          onTap: () {
+            FirebaseAuth.instance.signOut();
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
 
- }
+
+
+  );  
+  }
+}

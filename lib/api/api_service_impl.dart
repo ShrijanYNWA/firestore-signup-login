@@ -3,6 +3,7 @@ import 'package:firebase/api/api_response.dart';
 import 'package:firebase/api/apiservice.dart';
 import 'package:firebase/api/status_util.dart';
 import 'package:firebase/model/credential.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiServiceImpl extends ApiService {
   bool isUserExist = false;
@@ -50,4 +51,25 @@ class ApiServiceImpl extends ApiService {
     return ApiResponse(networkStatus: NetworkStatus.sucess, data: isUserExist);
   
   }
+
+Future<void> saveUserProfileToFirebase(
+    String userId, String displayName, String email, String photoURL) async {
+  try {
+    // Reference to the 'users' collection in Firestore
+    final CollectionReference<Map<String, dynamic>> usersCollection =
+        FirebaseFirestore.instance.collection('users');
+
+    // Add the user's details to the 'users' collection
+    await usersCollection.doc(userId).set({
+      'displayName': displayName,
+      'email': email,
+      'photoURL': photoURL,
+      // Add other profile details as needed
+    });
+  } catch (error) {
+    print('Error saving user profile to Firebase: $error');
+  }
+}
+
+
 }

@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:firebase/api/api_response.dart';
 import 'package:firebase/api/api_service_impl.dart';
 import 'package:firebase/api/apiservice.dart';
 import 'package:firebase/api/status_util.dart';
 import 'package:firebase/model/credential.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Passwordvisibility extends ChangeNotifier{
    bool showPassword=false;
+   
    String? name,address,email,contact,password;
   ApiService apiservice = ApiServiceImpl();
   
@@ -76,6 +80,23 @@ Future<void> loginDataInFirebase()async{
 
 
   }
+   bool loader=false;
+XFile? image;
+File? file;
+selectedimage(value){
+  image=value;
+  notifyListeners();
+
+}
+selectedfile(value){
+ file=value;
+ notifyListeners();
+}
+imagepickloader(bool value){
+loader==value;
+notifyListeners();
+}
+  
 
   
 }
