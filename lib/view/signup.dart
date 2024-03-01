@@ -43,6 +43,7 @@ class _StudentFormState extends State<StudentForm> {
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
                 color: Colors.transparent,
+                child: Image(image: AssetImage("asset/images/logo.png")),
               ),
               Container(
                 height: MediaQuery.of(context).size.height * 0.7,

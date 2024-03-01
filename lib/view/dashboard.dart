@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/carousel.dart';
+import 'package:firebase/view/carpenter.dart';
 import 'package:firebase/view/drawer.dart';
 import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/profile.dart';
@@ -294,7 +295,10 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => CarpenterDetailsPage(),));
+
+                                },
                               ),
                             ],
                           ),

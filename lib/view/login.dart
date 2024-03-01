@@ -52,6 +52,7 @@ class _LoginUiState extends State<LoginUi> {
         Container(
           height: MediaQuery.of(context).size.height * 0.5,
           color: Colors.transparent,
+          child: Image(image: AssetImage("asset/images/logo.png")),
         ),
         Container(
           height: MediaQuery.of(context).size.height * 0.5,

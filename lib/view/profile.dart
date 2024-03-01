@@ -2,35 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../model/users.dart';
 import '../util/string_const.dart';
 import 'editprofile.dart';
 
 class ProfilePage extends StatelessWidget {
   Future<void> _updateProfileInFirebase(User user) async {
     try {
-      await saveUserProfileToFirebase(
-        user.uid,
-        user.displayName ?? 'N/A',
-        user.email ?? 'N/A',
-        user.photoURL ?? '',
+      Users userData = Users(
+        displayName: user.displayName ?? 'N/A',
+        email: user.email ?? 'N/A',
+        photoURL: user.photoURL ?? '',
       );
+
+      await saveUserProfileToFirebase(user.uid, userData.toJson());
     } catch (error) {
       print('Error updating user profile in Firebase: $error');
     }
   }
 
-  Future<void> saveUserProfileToFirebase(
-    String userId, String displayName, String email, String photoURL) async {
+  Future<void> saveUserProfileToFirebase(String userId, Map<String, dynamic> userData) async {
     try {
       final CollectionReference<Map<String, dynamic>> usersCollection =
           FirebaseFirestore.instance.collection('users');
 
-      await usersCollection.doc(userId).set({
-        'displayName': displayName,
-        'email': email,
-        'photoURL': photoURL,
-        // Add other profile details as needed
-      });
+      await usersCollection.doc(userId).set(userData);
     } catch (error) {
       print('Error saving user profile to Firebase: $error');
     }
@@ -57,16 +53,10 @@ class ProfilePage extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 50.0),
-                  child: 
-                  
-                  CircleAvatar(
-  backgroundImage: NetworkImage(user.photoURL ?? ""),
-  radius: 75,
- // onBackgroundImageError: (exception, stackTrace) {
-   // print("Error loading image: $exception");
-    // return Icon(Icons.error); // Placeholder or error indicator
-  //},
-),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(user.photoURL ?? ""),
+                    radius: 75,
+                  ),
                 ),
               ),
             Padding(
@@ -96,6 +86,7 @@ class ProfilePage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 8.0),
               child: Text("Email:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
+            
             Container(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

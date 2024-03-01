@@ -4,29 +4,29 @@ import 'package:firebase/util/string_const.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PlumberDetails {
+class CarpenterDetails {
   final String name;
   final String location;
   final int rating;
   final int contact;
 
-  PlumberDetails({
+  CarpenterDetails({
     required this.name,
     required this.location,
     required this.rating,
     required this.contact,
   });
 
-  factory PlumberDetails.fromMap(Map<String, dynamic> map) {
+  factory CarpenterDetails.fromMap(Map<String, dynamic> map) {
     try {
-      return PlumberDetails(
+      return CarpenterDetails(
         name: map['name'] ?? '',
         location: map['location'] ?? '',
         rating: (map['rating'])  ?? 5,
         contact: map['contact'] ?? '',
       );
     } catch (e) {
-      print('Error creating PlumberDetails: $e');
+      print('Error creating CarpenterDetails: $e');
       throw e;
     }
   }
@@ -57,17 +57,17 @@ class StarRating extends StatelessWidget {
   }
 }
 
-class PlumberDetailsCard extends StatelessWidget {
-  final PlumberDetails plumberDetails;
+class CarpenterDetailsCard extends StatelessWidget {
+  final CarpenterDetails carpenterDetails;
 
-  PlumberDetailsCard(this.plumberDetails);
+  CarpenterDetailsCard(this.carpenterDetails);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         // When the card is tapped, show complete details in a dialog
-        _showDetailsDialog(context, plumberDetails);
+        _showDetailsDialog(context, carpenterDetails);
       },
       child: Card(
         margin: EdgeInsets.all(10),
@@ -75,17 +75,17 @@ class PlumberDetailsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text(plumberDetails.name),
+              title: Text(carpenterDetails.name),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Location: ${plumberDetails.location}'),
+                  Text('Location: ${carpenterDetails.location}'),
                   Text("Rating:"),
                   StarRating(
                     starCount: 5, // You can adjust the number of stars
-                    rating: plumberDetails.rating.toInt(),
+                    rating: carpenterDetails.rating.toInt(),
                   ),
-                  Text('Contact: ${plumberDetails.contact}'),
+                  Text('Contact: ${carpenterDetails.contact}'),
                 ],
               ),
             ),
@@ -96,7 +96,7 @@ class PlumberDetailsCard extends StatelessWidget {
   }
 
   // Function to show details in a dialog
-  void _showDetailsDialog(BuildContext context, PlumberDetails details) {
+  void _showDetailsDialog(BuildContext context, CarpenterDetails details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -131,16 +131,16 @@ class PlumberDetailsCard extends StatelessWidget {
 }
 
 
-class PlumberDetailsPage extends StatelessWidget {
+class CarpenterDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar( 
         backgroundColor: colorstr,
-        title: Text('Plumber Details'),
+        title: Text('Carpenter Details'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("plumber").snapshots(),
+        stream: FirebaseFirestore.instance.collection("carpenter").snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -151,7 +151,7 @@ class PlumberDetailsPage extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No plumber details found in Firestore.'));
+            return Center(child: Text('No carpenter details found in Firestore.'));
           }
 
           return ListView.builder(
@@ -160,8 +160,8 @@ class PlumberDetailsPage extends StatelessWidget {
               try {
                 Map<String, dynamic> data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
                 print("Data for index $index: $data");
-                PlumberDetails plumberDetails = PlumberDetails.fromMap(data);
-                return PlumberDetailsCard(plumberDetails);
+                CarpenterDetails plumberDetails = CarpenterDetails.fromMap(data);
+                return CarpenterDetailsCard(plumberDetails);
               } catch (e) {
                 print("Error processing data for index $index: $e");
                 return Container(); // Skip invalid data

@@ -1,5 +1,7 @@
+import 'package:firebase/view/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditProfilePage extends StatefulWidget {
   final User user;
@@ -15,6 +17,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _name;
   String? _email;
   String? _phoneNumber;
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -28,7 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        await user.updateProfile(displayName: _name, photoURL: null);
+        await user.updateProfile(displayName: _name, /*photoURL: null*/);
 
         // Check if email is not null before updating
         if (_email != null) {
@@ -58,6 +62,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  Future<void> _deleteProfile() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Delete user document in Firestore
+        await _usersCollection.doc(user.uid).delete();
+
+        // Delete the user account
+        await user.delete();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile deleted successfully')),
+        );
+
+        // Navigate to login page after successful deletion
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginUi()), // Replace with your login page
+          (route) => false,
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting profile: $e')),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +133,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   }
                 },
                 child: Text('Update Profile'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  _deleteProfile();
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red,
+                ),
+                child: Text('Delete Profile'),
               ),
             ],
           ),
