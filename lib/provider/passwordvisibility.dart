@@ -23,6 +23,18 @@ NetworkStatus loginStatus=NetworkStatus.idel;
     showPassword==value;
     notifyListeners();
    }
+    double? _latitude;
+  double? _longitude;
+
+  double? get latitude => _latitude;
+  double? get longitude => _longitude;
+
+  setCoordinates(double? latitude, double? longitude) {
+    _latitude = latitude;
+    _longitude = longitude;
+    notifyListeners();
+  }
+
 
 NetworkStatus saveStudentStatus=NetworkStatus.idel;
 //NetworkStatus getStudentDetailsStatus=NetworkStatus.idel;
