@@ -70,6 +70,19 @@ Future<void> saveUserProfileToFirebase(
     print('Error saving user profile to Firebase: $error');
   }
 }
+ @override
+  Future<Map<String, dynamic>> getUserData(String uid) async {
+    DocumentSnapshot<Map<String, dynamic>> userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-
+    if (userDoc.exists) {
+      return userDoc.data()!;
+    } else {
+      // Handle the case where user data doesn't exist
+      return {};
+    }
+  }
 }
+
+
+

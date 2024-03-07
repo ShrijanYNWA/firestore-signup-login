@@ -1,4 +1,5 @@
 import 'package:firebase/util/string_const.dart';
+import 'package:firebase/view/login.dart';
 import 'package:firebase/view/navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -88,8 +89,8 @@ class _MydrawerState extends State<Mydrawer> {
               ),
               title: Text('Logout'),
               onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
+                
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginUi(),), (route) => false);
               },
             ),
           ],
@@ -97,5 +98,6 @@ class _MydrawerState extends State<Mydrawer> {
       );
     
   }
+ 
  
 }

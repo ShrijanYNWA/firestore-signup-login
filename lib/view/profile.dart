@@ -2,33 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../model/users.dart';
-import '../util/string_const.dart';
 import 'editprofile.dart';
 
-class ProfilePage extends StatelessWidget {
-  Future<void> _updateProfileInFirebase(User user) async {
-    try {
-      Users userData = Users(
-        displayName: user.displayName ?? 'N/A',
-        email: user.email ?? 'N/A',
-        photoURL: user.photoURL ?? '',
-      );
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
 
-      await saveUserProfileToFirebase(user.uid, userData.toJson());
-    } catch (error) {
-      print('Error updating user profile in Firebase: $error');
-    }
+class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
   }
 
-  Future<void> saveUserProfileToFirebase(String userId, Map<String, dynamic> userData) async {
-    try {
-      final CollectionReference<Map<String, dynamic>> usersCollection =
-          FirebaseFirestore.instance.collection('users');
+  Future<void> fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
 
-      await usersCollection.doc(userId).set(userData);
-    } catch (error) {
-      print('Error saving user profile to Firebase: $error');
+    if (user != null) {
+      try {
+        if (user.providerData.isNotEmpty && user.providerData[0].providerId == 'google.com') {
+          // If the user signed in with Google, use Google provider data
+          userData = {
+            'name': user.displayName ?? 'N/A',
+            'email': user.email ?? 'N/A',
+            'contact': 'N/A', // Add Google-specific data as needed
+            'address': 'N/A', // Add Google-specific data as needed
+            'photoUrl': user.photoURL ?? '', // Set photoUrl for both Google and email/password login
+          };
+
+          // Store Google user data in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set(userData!);
+        } else {
+          // If the user signed in with email/password, fetch data from Firestore
+          DocumentSnapshot<Map<String, dynamic>> snapshot =
+              await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+          if (snapshot.exists) {
+            userData = snapshot.data();
+            // Ensure that the 'photoUrl' field is set, even if it's empty
+            userData!['photoUrl'] ??= '';
+          }
+        }
+
+        setState(() {});
+      } catch (error) {
+        print('Error fetching user profile data: $error');
+      }
     }
   }
 
@@ -38,14 +60,10 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colorstr,
-        title: Text(
-          "Profile",
-          style: TextStyle(color: Colors.white, fontSize: 30),
-        ),
+        title: Text("Profile"),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 15.0, right: 15),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,79 +82,58 @@ class ProfilePage extends StatelessWidget {
               child: Center(child: Text("Profile Details", style: TextStyle(fontSize: 30))),
             ),
             SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text("Name:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("${user?.displayName ?? 'N/A'}", style: TextStyle(fontSize: 20)),
-              ),
-              foregroundDecoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(10)),
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: MediaQuery.of(context).size.height * 0.055,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), border: Border.all(width: 1), color: Colors.white30),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text("Email:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ),
+            buildProfileField("Name:", userData?['name'] ?? 'N/A'),
+            buildProfileField("Email:", userData?['email'] ?? 'N/A'),
+            buildProfileField("Phone:", userData?['contact'] ?? 'N/A'),
+            buildProfileField("Address:", userData?['address'] ?? 'N/A'),
+
             
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("${user?.email ?? 'N/A'}", style: TextStyle(fontSize: 20)),
-              ),
-              foregroundDecoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(10)),
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: MediaQuery.of(context).size.height * 0.055,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), border: Border.all(width: 1), color: Colors.white30),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text("Phone :", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("${user?.phoneNumber ?? "Not set"}", style: TextStyle(fontSize: 20)),
-              ),
-              foregroundDecoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(10)),
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: MediaQuery.of(context).size.height * 0.055,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), border: Border.all(width: 1), color: Colors.white30),
-            ),
-            SizedBox(
-              height: 10,
-            ),
             ElevatedButton(
               onPressed: () async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditProfilePage(user: FirebaseAuth.instance.currentUser!),
+                    builder: (context) => EditProfilePage(user: user),
                   ),
                 ).then((_) {
-                  User? updatedUser = FirebaseAuth.instance.currentUser;
-                  if (updatedUser != null) {
-                    _updateProfileInFirebase(updatedUser);
-                  }
+                  // Update user data after returning from the EditProfilePage
+                  fetchUserData();
                 });
               },
               child: Text('Edit Profile'),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildProfileField(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Container(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(value, style: TextStyle(fontSize: 20)),
+            ),
+            foregroundDecoration: BoxDecoration(
+              color: Colors.black12,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: MediaQuery.of(context).size.width * 0.95,
+            height: MediaQuery.of(context).size.height * 0.055,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(width: 1),
+              color: Colors.white30,
+            ),
+          ),
+          SizedBox(height: 10),
+        ],
       ),
     );
   }

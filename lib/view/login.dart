@@ -16,12 +16,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
+import '../api/auth_service.dart';
+
 class LoginUi extends StatefulWidget {
    
   LoginUi({super.key});
 
   @override
   State<LoginUi> createState() => _LoginUiState();
+
 }
 
 class _LoginUiState extends State<LoginUi> {
@@ -30,7 +33,10 @@ class _LoginUiState extends State<LoginUi> {
         final RegExp passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$');
 
   ApiService apiService = ApiServiceImpl();
+  AuthService authService=AuthService();
   final _formKey = GlobalKey<FormState>();
+      final AuthService _authService = AuthService();
+
 
   @override
   Widget build(BuildContext context) {
@@ -155,35 +161,22 @@ class _LoginUiState extends State<LoginUi> {
                       width: MediaQuery.of(context).size.width * 0.9,
                       height: 65,
                       child: CustomElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            passwordVisibility
-                                .loginDataInFirebase()
-                                .then((value) {
-                              if (passwordVisibility.loginStatus ==
-                                      NetworkStatus.sucess &&
-                                  passwordVisibility.isUserExist) {
-                                Helper.snackBarMessage(
-                                    "Successfully Logged in", context);
-                                //navigate to dashboard
-                                // Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard())); //yesle back garda sidhei login page purauxa
-                                //push matra garne vaye yo mathi ko code 
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => Navbar()),
-                                    (Route<dynamic> route) => false); //push and remove until le chai back garda sidhei apps lai close garxa
-                              } else if (passwordVisibility.loginStatus ==
-                                      NetworkStatus.sucess &&
-                                  !passwordVisibility.isUserExist) {
-                                Helper.snackBarMessage(
-                                    "Invalid Credential!!!", context);
-                              } else if (passwordVisibility.loginStatus ==
-                                  NetworkStatus.error) {
-                                Helper.snackBarMessage(
-                                    "Failed to saved", context);
-                              }
-                            });
-                            //    print("login is presses");
+                            User? user = await _authService.signInWithEmailAndPassword(
+                              passwordVisibility.email!,
+                              passwordVisibility.password!,
+                            );
+
+                            if (user != null) {
+                              Helper.snackBarMessage("Successfully Logged in", context);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => Navbar()),
+                                (Route<dynamic> route) => false,
+                              );
+                            } else {
+                              Helper.snackBarMessage("Invalid Credential!!!", context);
+                            }
                           }
                         },
                         child: Text(loginStr),
@@ -192,7 +185,8 @@ class _LoginUiState extends State<LoginUi> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                    ),
+                    )
+                    ,
                     SizedBox(
                       height: 7,
                     ),

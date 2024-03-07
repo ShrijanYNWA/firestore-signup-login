@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final User user;
+  final User? user;
 
-  EditProfilePage({required this.user});
+  EditProfilePage({required this.user, Map<String, dynamic>? userData});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -23,9 +23,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    _name = widget.user.displayName;
-    _email = widget.user.email;
-    _phoneNumber = widget.user.phoneNumber;
+    _name = widget.user?.displayName;
+    _email = widget.user?.email;
+    _phoneNumber = widget.user?.phoneNumber;
   }
 
   Future<void> _updateProfile() async {
@@ -103,7 +103,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             children: [
               Center(
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.user.photoURL ?? ""),
+                  backgroundImage: NetworkImage(widget.user?.photoURL ?? ""),
                   radius: 75,
                 ),
               ),

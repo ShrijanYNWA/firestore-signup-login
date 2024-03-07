@@ -10,6 +10,7 @@ import 'package:firebase/view/dashboard.dart';
 import 'package:firebase/view/drawer.dart';
 import 'package:firebase/view/forgetpassword.dart';
 import 'package:firebase/view/haversine.dart';
+import 'package:firebase/view/searchpage.dart';
 import 'package:firebase/view/userlocation.dart';
 import 'package:firebase/view/locationplumber.dart';
 import 'package:firebase/view/login.dart';
@@ -89,8 +90,8 @@ ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibili
             colorScheme: ColorScheme.fromSeed(seedColor:colorstr),
             useMaterial3: true,
           ),
-          home:LoginUi() ,
-               // isUserExist? Dashboard():LoginUi(),
+          home:
+               isUserExist? Dashboard():LoginUi(),
         ),
       
     );

@@ -6,6 +6,7 @@ import 'package:firebase/view/carpenter.dart';
 import 'package:firebase/view/drawer.dart';
 import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/profile.dart';
+import 'package:firebase/view/searchpage.dart';
 import 'package:firebase/view/see_all.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -93,9 +94,8 @@ drawer: Mydrawer(),
                     children: [
                       CircleAvatar(
                           backgroundColor: Colors.white,
-                          child: GestureDetector(onTap: () =>
-                          // Open the drawer when the button is pressed
-              Scaffold.of(context).openDrawer(),
+                          child: GestureDetector(
+                            onTap: () => Mydrawer(),
                             child: Icon(
                               FontAwesomeIcons.homeUser,
                               color: colorstr,
@@ -142,7 +142,7 @@ drawer: Mydrawer(),
                             child: Icon(FontAwesomeIcons.bell,
                                 size: 25, color: colorstr),
                             onTap: () {
-                              print("hehe");
+                             // print("hehe");
                             },
                           ))
                     ],
@@ -160,6 +160,12 @@ drawer: Mydrawer(),
                 Container(
                   //3rd search wala
                   child: TextField(
+                    onTap: () =>
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage(),))
+                    
+                     ,
+                    
+                     
                     cursorColor: colorstr,
                     decoration: InputDecoration(
                         filled: true,
@@ -179,14 +185,11 @@ drawer: Mydrawer(),
                         hintText: "All Service Available",
                         hintStyle:
                             TextStyle(fontSize: 20, color: Colors.black38),
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              print(" search button is pressed");
-                            },
-                            icon: Icon(
+                        suffixIcon:
+                            Icon(
                               FontAwesomeIcons.search,
                               color: colorstr,
-                            ))),
+                            )),
                   ),
                 ),
                 SizedBox(

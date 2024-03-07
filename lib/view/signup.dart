@@ -7,10 +7,13 @@ import 'package:firebase/helper/helper.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+
+import '../api/auth_service.dart';
 
 class StudentForm extends StatefulWidget {
   StudentForm({super.key});
@@ -26,6 +29,8 @@ class _StudentFormState extends State<StudentForm> {
 
 
   final _formKey = GlobalKey<FormState>();
+      final AuthService _authService = AuthService();
+
 
   @override
   Widget build(BuildContext context) {
@@ -185,23 +190,44 @@ class _StudentFormState extends State<StudentForm> {
                       icon: const Icon(Icons.visibility_off))),
           sizedBox(20),
           CustomElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  passwordVisibility.saveStudentData().then((value) {
-                    if(passwordVisibility.saveStudentStatus==NetworkStatus.sucess){
-                        Helper.snackBarMessage("Successfully Registered", context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginUi()));
-                      }else if(passwordVisibility.saveStudentStatus==NetworkStatus.error){
-                        Helper.snackBarMessage(passwordVisibility.errormessage!, context);
-                      }
-                  });
-                }
-              },
-              child: Text(SignupStr),
-              primary: colorstr,
-              onprimary: Colors.white)
+        onPressed: () async {
+                          
+
+          if (_formKey.currentState!.validate()) {
+            // Register the user with Firebase
+            User? user = await _authService.registerWithEmailAndPassword(
+                    passwordVisibility.email!,
+                    passwordVisibility.password!,
+                    passwordVisibility.name!,
+                    passwordVisibility.address!,
+                    passwordVisibility.contact!,   
+            );
+
+            if (user != null) {
+              
+              // Registration successful
+              Helper.snackBarMessage("Successfully Registered", context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginUi()),
+                
+              );
+            } else {
+              // Registration failed
+              Helper.snackBarMessage("Registration Failed", context);
+            }
+          }
+        },
+        child: Text(SignupStr),
+        primary: colorstr,
+        onprimary: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+
+          ),
         ],
-      ),
+    )
     );
   }
   loader(Passwordvisibility passwordVisibility){ //function 5
