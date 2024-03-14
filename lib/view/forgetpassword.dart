@@ -1,19 +1,53 @@
-import 'dart:ui';
 
 import 'package:firebase/custom_ui/customelevatedbutton.dart';
 import 'package:firebase/custom_ui/customform.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Forgetpassword extends StatelessWidget {
+class ForgetPasswordPage extends StatefulWidget {
+
+   ForgetPasswordPage({super.key});
+
+  @override
+  State<ForgetPasswordPage> createState() => _ForgetPasswordPageState();
+}
+
+class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final RegExp emailRegex =
       RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-   Forgetpassword({super.key});
+
   final _formKey = GlobalKey<FormState>();
+
+  final  TextEditingController _emailController = TextEditingController();
+  
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+
+
+  Future passwordReset() async{
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email:_emailController.text.trim() );
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(content: Text("Password reset link sent! Check your email"));
+      },);
+
+    } on FirebaseAuthException catch(e){
+      print(e);
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(content: Text(e.message.toString()),);
+      },);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +120,9 @@ class Forgetpassword extends StatelessWidget {
                                 width: width(0.88, context),
                                 height: width(0.14, context),
                                 child: CustomElevatedButton(onPressed: () {
+
                           if (_formKey.currentState!.validate()) {
-                            
+                           passwordReset(); 
                           } 
                                 },child: Text("Submit"),onprimary: Colors.white,primary: colorstr,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),),
                               )
@@ -107,6 +142,7 @@ class Forgetpassword extends StatelessWidget {
     );
     
   }
+
   height(value, context) {
     return MediaQuery.of(context).size.height * value;
   }

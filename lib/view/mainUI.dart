@@ -35,8 +35,7 @@ class MainUi extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left:15,right: 15),
-                  child: Form(
-                         key: _formKey ,
+              
                     
                     child: Column(
                       children: [
@@ -48,7 +47,7 @@ class MainUi extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+            
             ],
           ),
         ),

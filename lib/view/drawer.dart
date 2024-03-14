@@ -24,80 +24,82 @@ class _MydrawerState extends State<Mydrawer> {
 
   Widget build(BuildContext context) {
     return Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(user?.photoURL ?? ""),
-                    radius: 50,
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Welcome, ${user?.displayName ?? 'Guest'}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ],
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.home,size: 23,),
-              title: Text("Home"),
-              onTap: () => Navigator.pushAndRemoveUntil(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundImage: user?.photoURL != null
+                      ? NetworkImage(user!.photoURL!)
+                      : NetworkImage("https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg") , // Add your default image path
+                  radius: 50,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Welcome, ${user?.displayName ?? 'Guest'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.home, size: 23),
+            title: Text("Home"),
+            onTap: () => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Navbar(),
+                ),
+                (route) => false),
+          ),
+          ListTile(
+            leading: Icon(
+              FontAwesomeIcons.circleExclamation,
+              size: 20,
+            ),
+            title: Text("About Us"),
+            // onTap: () =>
+            // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ,), (route) => false),
+          ),
+          ListTile(
+            leading: Icon(Icons.phone, size: 20),
+            title: Text('Contact Us'),
+            onTap: () {
+              launch('tel:+9779860899605');
+              Navigator.pop(context); // Close the drawer
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              FontAwesomeIcons.signOutAlt,
+              size: 20,
+            ),
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Navbar(),
+                    builder: (context) => LoginUi(),
                   ),
-                  (route) => false),
-            ),
-            ListTile(
-              leading: Icon(
-                FontAwesomeIcons.circleExclamation,
-                size: 20,
-              ),
-              title: Text("About Us"),
-              //   onTap: () =>
-              //   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ,), (route) => false),
-            ),
-            ListTile(
-  leading: Icon(Icons.phone,size: 20,),
-  title: Text('Contact Us'),
-  onTap: () {
-        launch('tel:+9779860899605');
-                Navigator.pop(context); // Close the drawer
-
-  },
-),
-            ListTile(
-              leading: Icon(
-                FontAwesomeIcons.signOutAlt,
-                size: 20,
-              ),
-              title: Text('Logout'),
-              onTap: () {
-                
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginUi(),), (route) => false);
-              },
-            ),
-          ],
-        ),
-      );
-    
+                  (route) => false);
+            },
+          ),
+        ],
+      ),
+    );
   }
- 
- 
 }

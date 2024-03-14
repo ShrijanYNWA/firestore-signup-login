@@ -1,12 +1,16 @@
-import 'package:firebase/view/login.dart';
+import 'package:firebase/util/string_const.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'login.dart';
+import 'profile.dart';
+
 class EditProfilePage extends StatefulWidget {
   final User? user;
+  final Map<String, dynamic>? userData;
 
-  EditProfilePage({required this.user, Map<String, dynamic>? userData});
+  EditProfilePage({required this.user, this.userData});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -14,9 +18,12 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
+
   String? _name;
   String? _email;
-  String? _phoneNumber;
+  String? _contact;
+  String? _address;
+
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
 
@@ -25,36 +32,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     _name = widget.user?.displayName;
     _email = widget.user?.email;
-    _phoneNumber = widget.user?.phoneNumber;
+    _contact = widget.user?.phoneNumber;
+    _address = widget.userData != null ? widget.userData!['address'] as String? ?? '' : '';
   }
 
   Future<void> _updateProfile() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        await user.updateProfile(displayName: _name, /*photoURL: null*/);
+        await user.updateProfile(displayName: _name);
 
-        // Check if email is not null before updating
         if (_email != null) {
           await user.updateEmail(_email!);
         }
 
-        // Handle phone number updates separately
-        // Note: You need to implement a secure way of updating phone numbers
-        // and obtain the verificationId and smsCode
-        // String verificationId = 'your_verification_id';
-        // String smsCode = 'your_sms_code';
-        // PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
-        //   verificationId: verificationId,
-        //   smsCode: smsCode,
-        // );
-        // await user.updatePhoneNumber(phoneAuthCredential);
+        await _usersCollection.doc(user.uid).update({
+          'name': _name,
+          'email': _email,
+          'contact': _contact,
+          'address': _address,
+        });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Profile updated successfully')),
         );
+
+        Navigator.pop(
+          context,
+          MaterialPageRoute(builder: (context) => ProfilePage()), // Pass user here
+        );
       } catch (e) {
-        // Print the error message for better debugging
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error updating profile: $e')),
         );
@@ -66,21 +73,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // Delete user document in Firestore
         await _usersCollection.doc(user.uid).delete();
-
-        // Delete the user account
         await user.delete();
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Profile deleted successfully')),
         );
 
-        // Navigate to login page after successful deletion
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginUi()), // Replace with your login page
-          (route) => false,
+          MaterialPageRoute(builder: (context) => LoginUi()),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,62 +91,76 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
+        backgroundColor:colorstr,
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Center(
-                child: CircleAvatar(
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
                   backgroundImage: NetworkImage(widget.user?.photoURL ?? ""),
                   radius: 75,
                 ),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                initialValue: _name,
-                decoration: InputDecoration(labelText: 'Name'),
-                onChanged: (value) => _name = value,
-              ),
-              SizedBox(height: 10),
-              // TextFormField(
-              //   initialValue: _email,
-              //   decoration: InputDecoration(labelText: 'Email'),
-              //   onChanged: (value) => _email = value,
-              // ),
-              SizedBox(height: 10),
-              TextFormField(
-                initialValue: _phoneNumber,
-                decoration: InputDecoration(labelText: 'Phone Number'),
-                onChanged: (value) => _phoneNumber = value,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _updateProfile();
-                  }
-                },
-                child: Text('Update Profile'),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  _deleteProfile();
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
+                SizedBox(height: 20),
+                buildProfileField("Name", _name, (value) => _name = value),
+                buildProfileField("Email", _email, (value) => _email = value),
+                buildProfileField("Contact", _contact, (value) => _contact = value),
+                buildProfileField("Address", _address, (value) => _address = value),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _updateProfile();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary:colorstr,
+                  ),
+                  child: Text('Update Profile'),
                 ),
-                child: Text('Delete Profile'),
-              ),
-            ],
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    _deleteProfile();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                  ),
+                  child: Text('Delete Profile'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildProfileField(String label, String? value, ValueChanged<String?> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        initialValue: value,
+        onChanged: onChanged,
+        style: TextStyle(fontSize: 18),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(fontSize: 16, color:colorstr),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color:colorstr),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color:colorstr, width: 2),
           ),
         ),
       ),

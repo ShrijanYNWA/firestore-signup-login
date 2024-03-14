@@ -51,10 +51,57 @@ class _DashboardState extends State<Dashboard> {
 // //bottomNavigationBar:
 
 //  navbar(),
-appBar: AppBar(
+      appBar: AppBar(
+        backgroundColor: colorstr,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(left: 75.0),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      "Welcome,",
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.waving_hand_outlined,
+                          color: Colors.orange[400],
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: width(0.02, context),
+                        ),
+                        Text("${user?.displayName ?? 'User'}", //welcome wala part
 
-),
-drawer: Mydrawer(),
+                            style: TextStyle(fontSize: 15, color: Colors.white))
+                      ],
+                    )
+                  ],
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width*0.4,
+                ),
+                CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(),)),
+                            child: Icon(
+                              FontAwesomeIcons.user,
+                              color: colorstr,
+                              size: 22,
+                            ),
+                          )),
+              ],
+            ),
+          ),
+          Spacer(),
+          SizedBox(),
+        ],
+      ),
+      drawer: Mydrawer(),
       body: SafeArea(
         child: ui(),
       ),
@@ -72,9 +119,7 @@ drawer: Mydrawer(),
   Widget ui() {
     return Stack(
       children: [
-        
         Container(
-          
           height: height(1, context),
           width: width(1, context),
           decoration: BoxDecoration(color: colorstr),
@@ -84,75 +129,79 @@ drawer: Mydrawer(),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  //1st part
-                  height: height(0.11, context),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: GestureDetector(
-                            onTap: () => Mydrawer(),
-                            child: Icon(
-                              FontAwesomeIcons.homeUser,
-                              color: colorstr,
-                              size: 25,
-                            ),
-                          )),
-                      SizedBox(
-                        width: width(0.04, context),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 30),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Welcome,",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 25),
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.waving_hand_outlined,
-                                  color: Colors.orange[400],
-                                  size: 20,
-                                ),
-                                SizedBox(
-                                  width: width(0.02, context),
-                                ),
-                                Text(
-                                    "${user?.displayName ?? 'User'}", //welcome wala part
+                // Container(
+                //   //1st part
+                //   height: height(0.11, context),
+                //   decoration: BoxDecoration(
+                //     color: Colors.transparent,
+                //   ),
+                //   child: Row(
+                //     children: [
+                //       CircleAvatar(
+                //           backgroundColor: Colors.white,
+                //           child: GestureDetector(
+                //             onTap: () => Mydrawer(),
+                //             child: Icon(
+                //               FontAwesomeIcons.homeUser,
+                //               color: colorstr,
+                //               size: 25,
+                //             ),
+                //           )),
+                //       SizedBox(
+                //         width: width(0.04, context),
+                //       ),
+                //       Padding(
+                //         padding: const EdgeInsets.only(top: 30),
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: [
+                //             Text(
+                //               "Welcome,",
+                //               style:
+                //                   TextStyle(color: Colors.white, fontSize: 25),
+                //             ),
+                //             Row(
+                //               children: [
+                //                 Icon(
+                //                   Icons.waving_hand_outlined,
+                //                   color: Colors.orange[400],
+                //                   size: 20,
+                //                 ),
+                //                 SizedBox(
+                //                   width: width(0.02, context),
+                //                 ),
+                //                 Text(
+                //                     "${user?.displayName ?? 'User'}", //welcome wala part
 
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.white))
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      Spacer(),
-                      CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: InkWell(
-                            child: Icon(FontAwesomeIcons.bell,
-                                size: 25, color: colorstr),
-                            onTap: () {
-                             // print("hehe");
-                            },
-                          ))
-                    ],
+                //                     style: TextStyle(
+                //                         fontSize: 15, color: Colors.white))
+                //               ],
+                //             )
+                //           ],
+                //         ),
+                //       ),
+                //       Spacer(),
+                //       CircleAvatar(
+                //           backgroundColor: Colors.white,
+                //           child: InkWell(
+                //             child: Icon(FontAwesomeIcons.bell,
+                //                 size: 25, color: colorstr),
+                //             onTap: () {
+                //               // print("hehe");
+                //             },
+                //           ))
+                //     ],
+                //   ),
+                // ),
+                Padding(
+                  padding: const EdgeInsets.only(top:10.0),
+                  child: Container( 
+                  
+                    color: Colors.transparent,
+                    width: width(1, context),
+                    height: height(0.20, context),
+                    child: carousel(context), // carousel ya call vaxa
                   ),
-                ),
-                Container(
-                  color: Colors.transparent,
-                  width: width(1, context),
-                  height: height(0.20, context),
-                  child: carousel(context), // carousel ya call vaxa
                 ),
                 SizedBox(
                   height: height(0.035, context),
@@ -160,12 +209,11 @@ drawer: Mydrawer(),
                 Container(
                   //3rd search wala
                   child: TextField(
-                    onTap: () =>
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage(),))
-                    
-                     ,
-                    
-                     
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchPage(),
+                        )),
                     cursorColor: colorstr,
                     decoration: InputDecoration(
                         filled: true,
@@ -185,11 +233,10 @@ drawer: Mydrawer(),
                         hintText: "All Service Available",
                         hintStyle:
                             TextStyle(fontSize: 20, color: Colors.black38),
-                        suffixIcon:
-                            Icon(
-                              FontAwesomeIcons.search,
-                              color: colorstr,
-                            )),
+                        suffixIcon: Icon(
+                          FontAwesomeIcons.search,
+                          color: colorstr,
+                        )),
                   ),
                 ),
                 SizedBox(
@@ -221,25 +268,30 @@ drawer: Mydrawer(),
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(top: 15),
-                  // 4th categories wala
-                  height: height(0.34, context),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                child: Column(
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlumberDetailsPage(),
+                      )),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 15),
+                    // 4th categories wala
+                    height: height(0.34, context),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -256,12 +308,7 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlumberDetailsPage(),));
-                                },
-                              ),
-                              GestureDetector(
-                                child: Column(
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -278,10 +325,7 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {},
-                              ),
-                              GestureDetector(
-                                child: Column(
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -298,21 +342,15 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => CarpenterDetailsPage(),));
-
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: height(0.015, context),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                child: Column(
+                              ],
+                            ),
+                            SizedBox(
+                              height: height(0.015, context),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -331,10 +369,7 @@ drawer: Mydrawer(),
                                     )
                                   ],
                                 ),
-                                onTap: () {},
-                              ),
-                              GestureDetector(
-                                child: Column(
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -351,10 +386,7 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {},
-                              ),
-                              GestureDetector(
-                                child: Column(
+                                Column(
                                   children: [
                                     CircleAvatar(
                                         backgroundColor: Colors.lightGreen[200],
@@ -371,14 +403,13 @@ drawer: Mydrawer(),
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                onTap: () {},
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ]),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ]),
+                  ),
                 ),
                 SizedBox(
                   height: height(0.001, context),
@@ -449,36 +480,34 @@ drawer: Mydrawer(),
       ).toList(),
     );
   }
-  Widget drawer(){
-  return Drawer(
-     child: ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blue,
-          ),
-          child: Text(
-            'Welcome, ${user?.displayName ?? 'Guest'}!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
+
+  Widget drawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text(
+              'Welcome, ${user?.displayName ?? 'Guest'}!',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
             ),
           ),
-        ),
-        ListTile(
-          leading: Icon(Icons.exit_to_app),
-          title: Text('Logout'),
-          onTap: () {
-            FirebaseAuth.instance.signOut();
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ),
-
-
-
-  );  
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Logout'),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -65,12 +65,12 @@ static List<double?> plumberLatitudeList = [];
 
   void initState(){
     requestLocationPermission();
-    super.initState();
     notificationSetting();
     listenNotification();
     fetchPlumberLocations();
     _getCurrentLocation();
     _fetchData();
+    super.initState();
 
   //  readValueFromSharedPreference();
   }
@@ -91,7 +91,8 @@ ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibili
             useMaterial3: true,
           ),
           home:
-               isUserExist? Dashboard():LoginUi(),
+              isUserExist? Dashboard():LoginUi(),
+       
         ),
       
     );

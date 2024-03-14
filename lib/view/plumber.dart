@@ -79,7 +79,7 @@ class PlumberDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colorstr,
-        title: Text('Plumber Details'),
+        title: Text('All Available Service Provider',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
       ),
       body: StreamBuilder<QuerySnapshot>(
   stream: FirebaseFirestore.instance.collection("plumber").snapshots(),

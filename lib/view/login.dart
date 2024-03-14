@@ -195,7 +195,7 @@ class _LoginUiState extends State<LoginUi> {
                         TextButton(
                             onPressed: () {
                               //  print("forget password button is pressed");
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Forgetpassword(),));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ForgetPasswordPage(),));
 
                             },
                             child: Text(
