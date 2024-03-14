@@ -31,15 +31,6 @@ class _DashboardState extends State<Dashboard> {
     "asset/images/photography.jpg",
   ];
 
-//  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-
-  // int _selectedPage = 0;
-  // final List<Widget> _pageOptions = [
-  //   Dashboard(),
-  //   Profile(),
-  //   MainUi(),
-  // ];
-
   @override
   void initState() {
     super.initState();
@@ -48,9 +39,9 @@ class _DashboardState extends State<Dashboard> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-// //bottomNavigationBar:
 
-//  navbar(),
+
+
       appBar: AppBar(
         backgroundColor: colorstr,
         actions: [
@@ -349,11 +340,163 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 SizedBox(
-                  height: height(0.001, context),
+                  height: height(0.018, context),
                 ),
                 Container(
-                  height: height(0.2, context),
-                  color: Colors.red,
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                  height: MediaQuery.of(context).size.height*0.6,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                  color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(style: BorderStyle.none,),
+                   
+                    
+                    ),
+                  child: Column(
+                    children: [
+                      Text("How we work",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w500),),
+                      SizedBox(height: 25,)
+                      ,SizedBox(
+                        child: Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                             Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/01 _register.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("01",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("Register",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text(""),
+                                              
+                               ],
+                             ),
+                             Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/02_on_time.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("02",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("On Time",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("Service",style: TextStyle(fontWeight: FontWeight.w500)),
+                      
+                      
+                                              
+                               ],
+                             ),Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/03_problem-solving.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("03"),
+                                              Text("Problem",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("Solved",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              
+                               ],
+                             ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 40,),
+                      Divider(thickness: 1.5,),
+                      SizedBox(height: 20,),
+                    Column(
+                    children: [
+                      Text("Our Service Policy",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w500),),
+                      SizedBox(height: 25,)
+                      ,SizedBox(
+                        child: Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                             Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/thumbsup.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("Quality",style: TextStyle(fontWeight: FontWeight.w500),),
+                                              Text("Spares",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              
+                                              
+                               ],
+                             ),
+                             Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/repair.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("30 Day Repair",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("Guarantee",style: TextStyle(fontWeight: FontWeight.w500)),
+                                        
+                      
+                      
+                                              
+                               ],
+                             ),Column(
+                               children: [
+                                 CircleAvatar(
+                                              backgroundColor:Colors.lightGreen[200],
+                                              radius: 30,
+                                              child: Image.asset(
+                                                "asset/images/reward.png",
+                                                fit: BoxFit.cover,
+                                                height: 40,
+                                                width: 40,
+                                              )),
+                                              SizedBox(height: 10,),
+                                              Text("Customer",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              Text("Satisfaction",style: TextStyle(fontWeight: FontWeight.w500)),
+                                              
+                      
+                                              
+                               ],
+                             ),
+                                    
+                          ],
+                        ),
+                      )
+
+                    ],
+                  ),
+SizedBox(height: 30,),
+                               Text("know more",style: TextStyle(color: Colors.blue,decoration: TextDecoration.underline ),)     
+
+                    ],
+                  ),
+                  
                 ),
                 SizedBox(
                   height: height(0.001, context),
@@ -365,26 +508,7 @@ class _DashboardState extends State<Dashboard> {
       ],
     );
   }
-//   navbar(){
-//     return  CurvedNavigationBar(
 
-//       index: _selectedPage,
-//       key: _bottomNavigationKey,
-//       items: <Widget>[
-//         Icon(Icons.home, size: 30),
-//         Icon(Icons.list, size: 30),
-//         Icon(Icons.compare_arrows, size: 30),
-//       ],
-//       onTap: (index) {
-//         setState(() {
-//           _selectedPage = index;
-//           });
-//         },
-//       );
-//   }
-//    Widget getCurrentPage() {
-//     return _pageOptions[_selectedPage];
-//   }
   Widget carousel(context) {
     return CarouselSlider(
       options: CarouselOptions(

@@ -22,7 +22,7 @@ class _ServiceProviderRegistrationState
   bool alreadyRegistered = false;
   bool isEditing = false; // Added for tracking whether the form is in edit mode
 
-  // List of professions for the dropdown
+
   List<String> professions = [
     'Cleaner',
     'Plumber',
@@ -33,9 +33,9 @@ class _ServiceProviderRegistrationState
     'Mechanic',
   ];
 
-  // Available options for the dropdown
+  
   List<bool> availabilityOptions = [true, false];
-  bool? _selectedAvailable; // Newly added field for available
+  bool? _selectedAvailable; 
   String? _selectedProfession;
 
   TextEditingController _nameController = TextEditingController();
@@ -60,7 +60,7 @@ class _ServiceProviderRegistrationState
             .get();
 
         if (existingRegistrations.docs.isNotEmpty) {
-          // User is already registered, set the state and populate the form fields
+          
           setState(() {
             alreadyRegistered = true;
           });
@@ -156,16 +156,16 @@ class _ServiceProviderRegistrationState
                             SizedBox(height: 20),
                             ElevatedButton(
   onPressed: () async {
-    // Validate the form
+    
     if (_formKey.currentState!.validate()) {
-      // If the form is valid, proceed with form submission
+    
       if (isEditing) {
-        // Handle form edit logic
+      
         await editForm(context);
       } else {
-        // Handle form submission logic
+        
         await submitForm(context);
-        // Show the success snackbar only if the user was not already registered
+      
         if (!alreadyRegistered) {
           showDialog(
             context: context,
