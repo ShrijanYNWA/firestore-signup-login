@@ -129,70 +129,7 @@ class _DashboardState extends State<Dashboard> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Container(
-                //   //1st part
-                //   height: height(0.11, context),
-                //   decoration: BoxDecoration(
-                //     color: Colors.transparent,
-                //   ),
-                //   child: Row(
-                //     children: [
-                //       CircleAvatar(
-                //           backgroundColor: Colors.white,
-                //           child: GestureDetector(
-                //             onTap: () => Mydrawer(),
-                //             child: Icon(
-                //               FontAwesomeIcons.homeUser,
-                //               color: colorstr,
-                //               size: 25,
-                //             ),
-                //           )),
-                //       SizedBox(
-                //         width: width(0.04, context),
-                //       ),
-                //       Padding(
-                //         padding: const EdgeInsets.only(top: 30),
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.start,
-                //           children: [
-                //             Text(
-                //               "Welcome,",
-                //               style:
-                //                   TextStyle(color: Colors.white, fontSize: 25),
-                //             ),
-                //             Row(
-                //               children: [
-                //                 Icon(
-                //                   Icons.waving_hand_outlined,
-                //                   color: Colors.orange[400],
-                //                   size: 20,
-                //                 ),
-                //                 SizedBox(
-                //                   width: width(0.02, context),
-                //                 ),
-                //                 Text(
-                //                     "${user?.displayName ?? 'User'}", //welcome wala part
-
-                //                     style: TextStyle(
-                //                         fontSize: 15, color: Colors.white))
-                //               ],
-                //             )
-                //           ],
-                //         ),
-                //       ),
-                //       Spacer(),
-                //       CircleAvatar(
-                //           backgroundColor: Colors.white,
-                //           child: InkWell(
-                //             child: Icon(FontAwesomeIcons.bell,
-                //                 size: 25, color: colorstr),
-                //             onTap: () {
-                //               // print("hehe");
-                //             },
-                //           ))
-                //     ],
-                //   ),
-                // ),
+                
                 Padding(
                   padding: const EdgeInsets.only(top:10.0),
                   child: Container( 

@@ -1,20 +1,27 @@
+//import 'package:firebase/view/plumber.dart';
+//import 'package:firebase/view/plumberDetailsScreen.dart';
 import 'package:firebase/view/plumber.dart';
+import 'package:firebase/view/plumberDetailsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../util/string_const.dart';
 
 class PlumberDetailsCard extends StatelessWidget {
+  
   final PlumberDetails plumberDetails;
+  
 
   PlumberDetailsCard(this.plumberDetails);
 
   @override
   Widget build(BuildContext context) {
+    Color statusColor = plumberDetails.available ? Colors.green : Colors.red;
+    String statusText = plumberDetails.available ? 'Available' : 'Unavailable';
     return GestureDetector(
       onTap: () {
-        // When the card is tapped, show complete details in a dialog
-        _showDetailsDialog(context, plumberDetails);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PlumberDetailsScreen(plumberDetails) ,));
+      
       },
       child:Card(
         margin: EdgeInsets.all(10),
@@ -66,6 +73,10 @@ class PlumberDetailsCard extends StatelessWidget {
                       Text(' ${plumberDetails.experience} years'),
                     ],
                   ),
+                   Text(
+                    statusText,
+                    style: TextStyle(color: statusColor, fontWeight: FontWeight.bold),
+                  ),
                   
                 ],
               ),
@@ -74,43 +85,6 @@ class PlumberDetailsCard extends StatelessWidget {
         ),
       ),
 
-    );
-  }
-  // Function to show details in a dialog
-void _showDetailsDialog(BuildContext context, PlumberDetails details) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Complete Details'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Name: ${details.name}'),
-              Text('Location: ${details.location}'),
-              Text("Rating:"),
-              StarRating(
-                starCount: 5,
-                rating: details.rating.toInt(),
-              ),
-              Text('Contact: ${details.contact}'),
-             // Text('Latitude: ${details.latitude}'),
-             // Text('Longitude: ${details.longitude}'),
-              Text('Distance: ${details.distance.toStringAsFixed(2)} km'),
-              Text('Experience: ${details.experience} years'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

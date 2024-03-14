@@ -11,9 +11,10 @@ class PlumberDetails {
   final int contact;
   final double latitude;
   final double longitude;
-  final double distance; // New field for distance
+  final double distance; 
   final int experience;
-  final String profession;// New field for experience
+  final String profession;
+    final bool available; 
 
   PlumberDetails({
     required this.name,
@@ -25,6 +26,7 @@ class PlumberDetails {
     required this.distance,
     required this.experience,
     required this.profession,
+     required this.available
   });
 
   factory PlumberDetails.fromMap(Map<String, dynamic> map) {
@@ -39,6 +41,8 @@ class PlumberDetails {
         distance: (map['distance'] as num?)?.toDouble() ?? 0.0,
         experience: (map['experience']) ?? 0,
         profession: (map['profession']) ?? '',
+        available: (map['available']) ?? '',
+        
 
       );
     } catch (e) {
@@ -51,8 +55,10 @@ class PlumberDetails {
 class StarRating extends StatelessWidget {
   final int starCount;
   final int rating;
+  double? size;
 
-  StarRating({required this.starCount, required this.rating});
+
+  StarRating({required this.starCount, required this.rating,this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +69,7 @@ class StarRating extends StatelessWidget {
           return Icon(
             index < rating ? Icons.star : Icons.star_border,
             color: colorstr,
+            size: size ,
           );
         },
       ),

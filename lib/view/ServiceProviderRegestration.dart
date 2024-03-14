@@ -11,10 +11,12 @@ class ServiceProviderRegistration extends StatefulWidget {
   ServiceProviderRegistration({super.key});
 
   @override
-  State<ServiceProviderRegistration> createState() => _ServiceProviderRegistrationState();
+  State<ServiceProviderRegistration> createState() =>
+      _ServiceProviderRegistrationState();
 }
 
-class _ServiceProviderRegistrationState extends State<ServiceProviderRegistration> {
+class _ServiceProviderRegistrationState
+    extends State<ServiceProviderRegistration> {
   final _formKey = GlobalKey<FormState>();
 
   bool alreadyRegistered = false;
@@ -31,7 +33,9 @@ class _ServiceProviderRegistrationState extends State<ServiceProviderRegistratio
     'Mechanic',
   ];
 
-
+  // Available options for the dropdown
+  List<bool> availabilityOptions = [true, false];
+  bool? _selectedAvailable; // Newly added field for available
   String? _selectedProfession;
 
   TextEditingController _nameController = TextEditingController();
@@ -69,6 +73,7 @@ class _ServiceProviderRegistrationState extends State<ServiceProviderRegistratio
           _locationController.text = registrationData['location'];
           _selectedProfession = registrationData['profession'];
           _experienceController.text = registrationData['experience'].toString();
+          _selectedAvailable = registrationData['available'] as bool?;
         }
       } catch (error) {
         print('Error fetching registration details: $error');
@@ -77,156 +82,202 @@ class _ServiceProviderRegistrationState extends State<ServiceProviderRegistratio
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Builder(builder: (context) => Stack(
-      children: [
-        Container(
-          color: colorstr,
-        ),
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                child: Image(
-                  image: NetworkImage(
-                    "https://firebasestorage.googleapis.com/v0/b/test-46b26.appspot.com/o/1000011063.png?alt=media&token=05757cc4-9566-4e9c-a083-2db36a91af92"),
-                ),
-                height: MediaQuery.of(context).size.height * 0.3,
-                color: Colors.transparent,
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(40),
-                    topLeft: Radius.circular(40),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Builder(builder: (context) => Stack(
+        children: [
+          Container(
+            color: colorstr,
+          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  child: Image(
+                    image: NetworkImage(
+                        "https://firebasestorage.googleapis.com/v0/b/test-46b26.appspot.com/o/1000011063.png?alt=media&token=05757cc4-9566-4e9c-a083-2db36a91af92"),
                   ),
-                  color: Colors.white,
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.3,
+                  color: Colors.transparent,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15),
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 40),
-                          buildFormField("Name", _nameController, namevalidate, Icons.person),
-                          buildFormField("Contact", _contactController, validateContact, Icons.phone),
-                          buildFormField("Location", _locationController, locationvalidator, Icons.place),
-                          buildDropdownFormField(
-                              "Profession",
-                              _selectedProfession,
-                              (value) {
-                                _selectedProfession = value;
-                              },
-                              professions,
-                              Icons.home_repair_service_sharp),
-                          buildFormField(
-                              "Experience(Years)", _experienceController, experiencevalidator, Icons.person),
-                          SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (isEditing) {
-                                // Handle form edit logic
-                                await editForm(context);
-                              } else {
-                                // Handle form submission logic
-                                await submitForm(context);
-                                // Show the success snackbar only if the user was not already registered
-                                if (!alreadyRegistered) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(content: Text("Form submitted successfully!"));
-                                    },
-                                  );
-                                }
-                              }
+                Container(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.7,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(40),
+                      topLeft: Radius.circular(40),
+                    ),
+                    color: Colors.white,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 40),
+                            buildFormField(
+                                "Name", _nameController, namevalidate,
+                                Icons.person),
+                            buildFormField(
+                                "Contact", _contactController,
+                                validateContact, Icons.phone),
+                            buildFormField(
+                                "Location", _locationController,
+                                locationvalidator, Icons.place),
+                            buildDropdownFormField(
+                                "Profession",
+                                _selectedProfession, (value) {
+                              _selectedProfession = value;
                             },
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: colorstr.withOpacity(1),
-                              elevation: 15,
-                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Color.fromARGB(255, 181, 255, 185), const Color.fromARGB(255, 6, 96, 10)],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
+                                professions,
+                                Icons.home_repair_service_sharp),
+                            buildFormField(
+                                "Experience(Years)", _experienceController,
+                                experiencevalidator, Icons.person),
+                            buildDropdownFormField(
+                                "Available",
+                                _selectedAvailable.toString(), (value) {
+                              _selectedAvailable = value == 'true';
+                            },
+                                availabilityOptions.map((bool value) => value.toString()).toList(),
+                                Icons.access_time), // Dropdown for availability
+                            SizedBox(height: 20),
+                            ElevatedButton(
+  onPressed: () async {
+    // Validate the form
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, proceed with form submission
+      if (isEditing) {
+        // Handle form edit logic
+        await editForm(context);
+      } else {
+        // Handle form submission logic
+        await submitForm(context);
+        // Show the success snackbar only if the user was not already registered
+        if (!alreadyRegistered) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text("Form submitted successfully!"),
+              );
+            },
+          );
+        }
+      }
+    }
+  },
+                              style: ElevatedButton.styleFrom(
+                                shadowColor: colorstr.withOpacity(1),
+                                elevation: 15,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(255, 181, 255, 185),
+                                      const Color.fromARGB(
+                                          255, 6, 96, 10)
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Center(
-                                child: Text(isEditing ? 'Save Changes' : 'Register',
-                                    style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 234, 226, 226))),
+                                child: Center(
+                                  child: Text(
+                                      isEditing ? 'Save Changes' : 'Register',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: Color.fromARGB(
+                                              255, 234, 226, 226))),
+                                ),
                               ),
                             ),
-                          ),
-                          if (isEditing && _selectedProfession != null)
+                            if (isEditing && _selectedProfession != null)
                             // Display delete button only in edit mode and when a profession is selected
-                            ElevatedButton(
-                              onPressed: () {
-                                // Handle delete logic
-                                showDeleteConfirmationDialog(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.red,
-                                shadowColor: Colors.red.withOpacity(1),
-                                elevation: 15,
-                                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle delete logic
+                                  showDeleteConfirmationDialog(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.red,
+                                  shadowColor: Colors.red.withOpacity(1),
+                                  elevation: 15,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
                                 ),
-                                child: Center(
-                                  child: Text('Delete', style: TextStyle(fontSize: 20, color: Colors.white)),
-                                ),
-                              ),
-                            ),
-                          // Display edit button only if not already editing
-                          if (!isEditing && _selectedProfession != null)
-                            ElevatedButton(
-                              onPressed: () {
-                                // Set the form in editing mode
-                                setState(() {
-                                  isEditing = true;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.blue,
-                                shadowColor: Colors.blue.withOpacity(1),
-                                elevation: 15,
-                                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Center(
-                                  child: Text('Edit', style: TextStyle(fontSize: 20, color: Colors.white)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Center(
+                                    child: Text('Delete',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white)),
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
+                            // Display edit button only if not already editing
+                            if (!isEditing && _selectedProfession != null)
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Set the form in editing mode
+                                  setState(() {
+                                    isEditing = true;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.blue,
+                                  shadowColor: Colors.blue.withOpacity(1),
+                                  elevation: 15,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Center(
+                                    child: Text('Edit',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white)),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    )),
-  );
-}
+        ],
+      )),
+    );
+  }
 
-  Widget buildFormField(String label, TextEditingController controller, String? Function(String? value)? validator, IconData prefixIcon) {
+  Widget buildFormField(String label, TextEditingController controller,
+      String? Function(String? value)? validator, IconData prefixIcon) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
@@ -248,8 +299,14 @@ Widget build(BuildContext context) {
     );
   }
 
+  
   Widget buildDropdownFormField(String label, String? value,
       ValueChanged<String?> onChanged, List<String> items, IconData prefixIcon) {
+    // Check if the value is null or empty, and assign the default value
+    if (value == null || value.isEmpty) {
+      _selectedAvailable = availabilityOptions.first;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
@@ -270,20 +327,21 @@ Widget build(BuildContext context) {
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            prefixIcon: Icon(prefixIcon, color: colorstr),
+            prefixIcon: Icon(prefixIcon, color: Colors.black),
             labelText: label,
-            labelStyle: TextStyle(fontSize: 16, color: colorstr),
+            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: colorstr, width: 2),
+              borderSide: BorderSide(color: Colors.black, width: 2),
             ),
           ),
         ),
       ),
     );
   }
+
 
   String? validateContact(String? value) {
     if (value == null || value.isEmpty) {
@@ -299,7 +357,8 @@ Widget build(BuildContext context) {
     if (value == null || value.isEmpty) {
       return "$nameValidationStr";
     }
-    if (value.isNotEmpty && !RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+    if (value.isNotEmpty &&
+        !RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
       return 'Name should be a string';
     }
     return null;
@@ -326,40 +385,96 @@ Widget build(BuildContext context) {
   }
 
   Future<void> submitForm(BuildContext context) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    int experience = int.parse(_experienceController.text);
-    int contact = int.parse(_contactController.text);
+  User? user = FirebaseAuth.instance.currentUser;
+  int experience = int.parse(_experienceController.text);
+  int contact = int.parse(_contactController.text);
 
-    if (user != null && _selectedProfession != null) {
-      try {
-        // Check if the user already has a registration
-        QuerySnapshot existingRegistrations = await FirebaseFirestore.instance
-            .collection("plumber")
-            .where('userId', isEqualTo: user.uid)
-            .get();
+  if (user != null && _selectedProfession != null) {
+    try {
+      // Check if the user already has a registration
+      QuerySnapshot existingRegistrations = await FirebaseFirestore.instance
+          .collection("plumber")
+          .where('userId', isEqualTo: user.uid)
+          .get();
 
-        if (existingRegistrations.docs.isNotEmpty) {
-          // User already has a registration, show a Snackbar
-          setState(() {
-            alreadyRegistered = true;
-          });
+      if (existingRegistrations.docs.isNotEmpty) {
+        // User already has a registration, show a Snackbar
+        setState(() {
+          alreadyRegistered = true;
+        });
 
-          showDialog(context: context, builder: (context) {
-            return AlertDialog(content: Text("Already register so failed to submit form!"));
-          });
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(content: Text("Already registered, failed to submit form!"));
+        });
 
-          // You can customize the Snackbar's appearance and duration as needed
-          return;
-        }
+        return;
+      }
 
-        // User doesn't have a registration, proceed with adding a new one
-        await FirebaseFirestore.instance.collection("plumber").add({
-          'userId': user.uid,
+      // Convert string value to boolean
+      bool available = _selectedAvailable ?? false;
+
+      // User doesn't have a registration, proceed with adding a new one
+      await FirebaseFirestore.instance.collection("plumber").add({
+        'userId': user.uid,
+        'name': _nameController.text,
+        'contact': contact,
+        'location': _locationController.text,
+        'profession': _selectedProfession,
+        'experience': experience,
+        'available': available, // Store boolean value in Firestore
+      });
+
+      // Clear text controllers and reset dropdown value
+      _nameController.clear();
+      _contactController.clear();
+      _locationController.clear();
+      _experienceController.clear();
+      _selectedProfession = null;
+      _selectedAvailable = null; // Reset available field
+
+      // Reload the form
+      _formKey.currentState?.reset();
+
+      // Show the success snackbar only if the user was not already registered
+      if (!alreadyRegistered) {
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(content: Text("Form submitted successfully!"));
+        });
+      }
+    } catch (error) {
+      print('Error submitting form: $error');
+    }
+  }
+}
+
+  Future<void> editForm(BuildContext context) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  int experience = int.parse(_experienceController.text);
+  int contact = int.parse(_contactController.text);
+
+  if (user != null && _selectedProfession != null) {
+    try {
+      // Check if the user has a registration
+      QuerySnapshot existingRegistrations = await FirebaseFirestore.instance
+          .collection("plumber")
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      if (existingRegistrations.docs.isNotEmpty) {
+        // User has a registration, proceed with updating
+        QueryDocumentSnapshot registrationDoc = existingRegistrations.docs.first;
+        String registrationId = registrationDoc.id;
+
+        // Convert string value to boolean
+        bool available = _selectedAvailable ?? false;
+
+        await FirebaseFirestore.instance.collection("plumber").doc(registrationId).update({
           'name': _nameController.text,
           'contact': contact,
           'location': _locationController.text,
           'profession': _selectedProfession,
           'experience': experience,
+          'available': available, // Store boolean value in Firestore
         });
 
         // Clear text controllers and reset dropdown value
@@ -368,74 +483,27 @@ Widget build(BuildContext context) {
         _locationController.clear();
         _experienceController.clear();
         _selectedProfession = null;
+        _selectedAvailable = null; // Reset available field
 
         // Reload the form
         _formKey.currentState?.reset();
 
-        // Show the success snackbar only if the user was not already registered
-        if (!alreadyRegistered) {
-          showDialog(context: context, builder: (context) {
-            return AlertDialog(content: Text("Form submitted successfully!"));
-          });
-        }
-      } catch (error) {
-        print('Error submitting form: $error');
+        setState(() {
+          isEditing = false;
+        });
+
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(content: Text("Form updated successfully!"));
+          },
+        );
       }
+    } catch (error) {
+      print('Error updating form: $error');
     }
   }
-
-  Future<void> editForm(BuildContext context) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    int experience = int.parse(_experienceController.text);
-    int contact = int.parse(_contactController.text);
-
-    if (user != null && _selectedProfession != null) {
-      try {
-        // Check if the user has a registration
-        QuerySnapshot existingRegistrations = await FirebaseFirestore.instance
-            .collection("plumber")
-            .where('userId', isEqualTo: user.uid)
-            .get();
-
-        if (existingRegistrations.docs.isNotEmpty) {
-          // User has a registration, proceed with updating
-          QueryDocumentSnapshot registrationDoc = existingRegistrations.docs.first;
-          String registrationId = registrationDoc.id;
-
-          await FirebaseFirestore.instance.collection("plumber").doc(registrationId).update({
-            'name': _nameController.text,
-            'contact': contact,
-            'location': _locationController.text,
-            'profession': _selectedProfession,
-            'experience': experience,
-          });
-
-          // Clear text controllers and reset dropdown value
-          _nameController.clear();
-          _contactController.clear();
-          _locationController.clear();
-          _experienceController.clear();
-          _selectedProfession = null;
-
-          // Reload the form
-          _formKey.currentState?.reset();
-
-          setState(() {
-            isEditing = false;
-          });
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(content: Text("Form updated successfully!"));
-            },
-          );
-        }
-      } catch (error) {
-        print('Error updating form: $error');
-      }
-    }
-  }
+}
 
   Future<void> showDeleteConfirmationDialog(BuildContext context) async {
     return showDialog<void>(
@@ -493,6 +561,7 @@ Widget build(BuildContext context) {
           _locationController.clear();
           _experienceController.clear();
           _selectedProfession = null;
+          _selectedAvailable = null; // Reset available field
 
           // Reload the form
           _formKey.currentState?.reset();
