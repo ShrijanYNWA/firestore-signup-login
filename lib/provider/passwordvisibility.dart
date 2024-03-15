@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Passwordvisibility extends ChangeNotifier{
    bool showPassword=false;
+   TextEditingController emailController=TextEditingController();
    
    String? name,address,email,contact,password;
   ApiService apiservice = ApiServiceImpl();
@@ -65,31 +66,27 @@ if(response.networkStatus==NetworkStatus.sucess){
       errormessage=response.errormessage;
       setSaveStudentNetworkStatus(NetworkStatus.error);
     }
-
-
 }
 Future<void> loginDataInFirebase()async{
     if(loginStatus!=NetworkStatus.loading){
       setLoginStatus(NetworkStatus.loading);
-
     }
     Credential credential=Credential(email: email,password: password);
     ApiResponse response=await apiservice.loginData(credential);
     if(response.networkStatus==NetworkStatus.sucess){
       isUserExist=response.data;
       setLoginStatus(NetworkStatus.sucess);
-      saveValueToSharedPreferences(isUserExist);//isUserExit ko value yo case ma true aauxa 
+    
     }else if(response.networkStatus==NetworkStatus.error){
       errormessage=response.errormessage;
       setLoginStatus(NetworkStatus.error);
     }
 
-
   }// Writing data 
-  saveValueToSharedPreferences(bool value)async{
+  saveValueToSharedPreferences()async{
     final SharedPreferences prefs = await SharedPreferences.getInstance(); //prefs just variable matra ho
-    await prefs.setBool('isUserExist', value); //repeat vaneko key ya sidhei value ko thauma isUserExist pathauda ni hunxa
-
+    await prefs.setBool('isUserExist', true); //repeat vaneko key ya sidhei value ko thauma isUserExist pathauda ni hunxa
+notifyListeners();
 
   }
    bool loader=false;
@@ -109,6 +106,10 @@ loader==value;
 notifyListeners();
 }
   
-
+String? currentLocation;
+setLocation(value){
+  currentLocation=value;
+  notifyListeners();
+}
   
 }

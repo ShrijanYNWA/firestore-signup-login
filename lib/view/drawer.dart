@@ -4,6 +4,7 @@ import 'package:firebase/view/navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Mydrawer extends StatefulWidget {
@@ -89,7 +90,11 @@ class _MydrawerState extends State<Mydrawer> {
               size: 20,
             ),
             title: Text('Logout'),
-            onTap: () {
+            onTap: () async{
+                  // FirebaseAuth.instance.signOut();
+               final SharedPreferences prefs = await SharedPreferences.getInstance(); //prefs just variable matra ho
+    await prefs.remove("isUserExist");
+
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

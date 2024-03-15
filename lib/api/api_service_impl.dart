@@ -33,7 +33,7 @@ class ApiServiceImpl extends ApiService {
   Future<ApiResponse> loginData(Credential credential)async {
     try {
       await FirebaseFirestore.instance
-          .collection("credential")
+          .collection("users")
           .where("email", isEqualTo: credential.email)
           .where("password", isEqualTo: credential.password)
           .get() // value get garaxa 

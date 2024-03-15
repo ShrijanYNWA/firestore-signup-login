@@ -153,8 +153,10 @@ class _ServiceProviderRegistrationState
                             },
                                 availabilityOptions.map((bool value) => value.toString()).toList(),
                                 Icons.access_time), // Dropdown for availability
-                            SizedBox(height: 20),
-                            ElevatedButton(
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                ElevatedButton(
   onPressed: () async {
     
     if (_formKey.currentState!.validate()) {
@@ -179,36 +181,27 @@ class _ServiceProviderRegistrationState
       }
     }
   },
-                              style: ElevatedButton.styleFrom(
-                                shadowColor: colorstr.withOpacity(1),
-                                elevation: 15,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 15),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromARGB(255, 181, 255, 185),
-                                      const Color.fromARGB(
-                                          255, 6, 96, 10)
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
+                                  style: ElevatedButton.styleFrom(
+                                    shadowColor: colorstr.withOpacity(1),
+                                    elevation: 15,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 15),
+                                  backgroundColor: colorstr
                                   ),
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                      isEditing ? 'Save Changes' : 'Register',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Color.fromARGB(
-                                              255, 234, 226, 226))),
-                                ),
-                              ),
-                            ),
-                            if (isEditing && _selectedProfession != null)
+                                  child: Container(
+                                    height: 23,
+                                  width: 100,
+                                    child: Center(
+                                      child: Text(
+                                          isEditing ? 'Save Changes' : 'Register',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color.fromARGB(
+                                                  255, 234, 226, 226))),
+                                    ),
+                                  ),
+                                ), Spacer(),
+                                if (isEditing && _selectedProfession != null)
                             // Display delete button only in edit mode and when a profession is selected
                               ElevatedButton(
                                 onPressed: () {
@@ -223,19 +216,21 @@ class _ServiceProviderRegistrationState
                                       vertical: 10, horizontal: 15),
                                 ),
                                 child: Container(
+                                  height: 23,
+                                  width: 100,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   child: Center(
                                     child: Text('Delete',
                                         style: TextStyle(
-                                            fontSize: 20,
+                                            fontSize: 15,
                                             color: Colors.white)),
                                   ),
                                 ),
                               ),
-                            // Display edit button only if not already editing
-                            if (!isEditing && _selectedProfession != null)
+
+                              if (!isEditing && _selectedProfession != null)
                               ElevatedButton(
                                 onPressed: () {
                                   // Set the form in editing mode
@@ -244,24 +239,31 @@ class _ServiceProviderRegistrationState
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue,
-                                  shadowColor: Colors.blue.withOpacity(1),
+                                  primary:colorstr,
+                                  shadowColor: colorstr.withOpacity(1),
                                   elevation: 15,
                                   padding: EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 15),
                                 ),
                                 child: Container(
+                                  height: 23,
+                                  width: 100,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   child: Center(
                                     child: Text('Edit',
                                         style: TextStyle(
-                                            fontSize: 20,
+                                            fontSize: 15,
                                             color: Colors.white)),
                                   ),
                                 ),
                               ),
+                              ],
+                            ),
+                            
+                            // Display edit button only if not already editing
+                            
                           ],
                         ),
                       ),
@@ -319,7 +321,7 @@ class _ServiceProviderRegistrationState
               value: item,
               child: Text(
                 item,
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: colorstr),
               ),
             );
           }).toList(),
@@ -327,14 +329,14 @@ class _ServiceProviderRegistrationState
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            prefixIcon: Icon(prefixIcon, color: Colors.black),
+            prefixIcon: Icon(prefixIcon, color: colorstr),
             labelText: label,
-            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+            labelStyle: TextStyle(fontSize: 16, color: colorstr),
             border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black),
+              borderSide: BorderSide(color: colorstr),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 2),
+              borderSide: BorderSide(color:colorstr, width: 2),
             ),
           ),
         ),

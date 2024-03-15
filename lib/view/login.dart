@@ -61,7 +61,7 @@ class _LoginUiState extends State<LoginUi> {
           child: Image(image: AssetImage("asset/images/logo.png")),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.514,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -163,12 +163,11 @@ class _LoginUiState extends State<LoginUi> {
                       child: CustomElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            User? user = await _authService.signInWithEmailAndPassword(
-                              passwordVisibility.email!,
-                              passwordVisibility.password!,
-                            );
+                            
+                             await passwordVisibility.loginDataInFirebase();
 
-                            if (user != null) {
+                            if (passwordVisibility.loginStatus== NetworkStatus.sucess) {
+                              passwordVisibility.saveValueToSharedPreferences();
                               Helper.snackBarMessage("Successfully Logged in", context);
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(builder: (context) => Navbar()),
@@ -234,7 +233,7 @@ class _LoginUiState extends State<LoginUi> {
                 children: [
                   Icon(FontAwesomeIcons.google),
                   SizedBox(
-                    width: 15,
+                    width: 12,
                   ),
                   Text("Login with Google")
                 ],

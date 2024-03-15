@@ -94,6 +94,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
@@ -108,8 +110,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(widget.user?.photoURL ?? ""),
-                  radius: 75,
+                  backgroundImage: user?.photoURL != null &&
+                            user!.photoURL!.isNotEmpty
+                        ? NetworkImage(user.photoURL!)
+                        : NetworkImage(
+                            'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg'), // Provide a placeholder image URL
+                    radius: 75,
                 ),
                 SizedBox(height: 20),
                 buildProfileField("Name", _name, (value) => _name = value),
@@ -117,27 +123,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 buildProfileField("Contact", _contact, (value) => _contact = value),
                 buildProfileField("Address", _address, (value) => _address = value),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _updateProfile();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary:colorstr,
-                  ),
-                  child: Text('Update Profile'),
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _updateProfile();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary:colorstr,
+                      ),
+                      child: Text('Update Profile',style: TextStyle(color: Colors.white),),
+                    ),
+                    Spacer(),
+ElevatedButton(
                   onPressed: () {
                     _deleteProfile();
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.red,
+                    onPrimary: Colors.white
                   ),
                   child: Text('Delete Profile'),
                 ),
+
+                  ],
+                ),
+                SizedBox(height: 10),
+                
               ],
             ),
           ),

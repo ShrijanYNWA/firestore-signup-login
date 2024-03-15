@@ -49,7 +49,7 @@ class _SearchPageState extends State<SearchPage> {
         ),
         body: Stack(
           children: [
-            if (showImage)
+            showImage?
               Padding(
                 padding: const EdgeInsets.only(top:100,left: 15,right: 5),
                 child: SizedBox(
@@ -59,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                   fit: BoxFit.cover,
                   ),
                 ),
-              ),
+              ):SizedBox(),
             Column(
               children: [
                 Padding(
@@ -175,9 +175,10 @@ class _SearchPageState extends State<SearchPage> {
 
   // Function to search based on the first two letters of the profession name
   void searchProfession(String searchTerm) {
-    setState(() {
-      // Trigger a rebuild with the updated search term
-      showImage = searchTerm.isEmpty;
-    });
-  }
+  setState(() {
+    // Toggle the visibility of the image based on whether the search term is empty or not
+    showImage = searchTerm.isEmpty;
+  });
+}
+
 }

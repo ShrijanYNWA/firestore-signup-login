@@ -1,4 +1,5 @@
 
+import 'package:email_otp/email_otp.dart';
 import 'package:firebase/custom_ui/customelevatedbutton.dart';
 import 'package:firebase/custom_ui/customform.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
@@ -9,6 +10,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../helper/helper.dart';
+import 'otp_page.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
 
@@ -23,6 +27,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   final _formKey = GlobalKey<FormState>();
+  EmailOTP myauth = EmailOTP();
 
   final  TextEditingController _emailController = TextEditingController();
   
@@ -98,12 +103,14 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                           ),
                           SizedBox(height: height(0.018, context),),
                               CustomForm(
+                                controller: passwordVisibility.emailController,
                                 hintText: "Email Address",
                                 keyboardType: TextInputType.emailAddress,
                                 prefixIcon: Icon(Icons.email,color: colorstr,),
                                 validator: (value) {
                                   if(value!.isEmpty){
                                     return emailValidationStr;
+
 
                                   }
                                  else if(!emailRegex.hasMatch(value)){
@@ -119,11 +126,43 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                               SizedBox(
                                 width: width(0.88, context),
                                 height: width(0.14, context),
-                                child: CustomElevatedButton(onPressed: () {
+                                child: CustomElevatedButton(onPressed: ()async {
 
-                          if (_formKey.currentState!.validate()) {
-                           passwordReset(); 
-                          } 
+                          // if (_formKey.currentState!.validate()) {
+                          //  passwordReset(); 
+                          // } 
+                           if (_formKey.currentState!.validate()) {
+                        
+                      
+                        
+                            myauth.setConfig(
+                              appEmail: 'srijanynwa22@gmail.com',
+                              appName: 'HomeService',
+                              userEmail:  passwordVisibility.emailController.text,
+                              otpLength: 6,
+                              otpType: OTPType.digitsOnly,
+                            );
+                            if (await myauth.sendOTP() == true) {
+                              OtpDataClass otpData = OtpDataClass(
+                                  email: passwordVisibility.emailController.text,
+                                  emailOTP: myauth);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OtpPage(
+                                    otpDataClass: otpData,
+                                  ),
+                                ),
+                              );
+                              Helper.snackBarMessage("Otp sent", context);
+                             
+                            } else {
+                               Helper.snackBarMessage("Otp sent failed", context);
+                              
+                            }
+                         
+                       
+                      }
                                 },child: Text("Submit"),onprimary: Colors.white,primary: colorstr,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),),
                               )
                         
@@ -150,4 +189,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   width(value, context) {
     return MediaQuery.of(context).size.width * value;
   }
+}
+class OtpDataClass {
+  String? email;
+  EmailOTP? emailOTP;
+  OtpDataClass({this.email, this.emailOTP});
 }

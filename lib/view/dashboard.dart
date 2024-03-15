@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/carousel.dart';
 import 'package:firebase/view/carpenter.dart';
 import 'package:firebase/view/drawer.dart';
+import 'package:firebase/view/login.dart';
 import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/profile.dart';
 import 'package:firebase/view/searchpage.dart';
@@ -11,6 +13,11 @@ import 'package:firebase/view/see_all.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mainUI.dart';
 
@@ -34,6 +41,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    var provider=Provider.of<Passwordvisibility>(context, listen: false);
+        checkPermission(provider,Permission.location, context);
     user = FirebaseAuth.instance.currentUser;
   }
 
@@ -44,10 +53,10 @@ class _DashboardState extends State<Dashboard> {
 
       appBar: AppBar(
         backgroundColor: colorstr,
-        actions: [
-          Padding(
+        title: Padding(
             padding: const EdgeInsets.only(left: 75.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   children: [
@@ -72,10 +81,14 @@ class _DashboardState extends State<Dashboard> {
                     )
                   ],
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.4,
-                ),
-                CircleAvatar(
+                
+              ],
+            ),
+          ),
+        
+        actions: [
+          CircleAvatar(
+                  radius: 20,
                           backgroundColor: Colors.white,
                           child: GestureDetector(
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(),)),
@@ -85,12 +98,7 @@ class _DashboardState extends State<Dashboard> {
                               size: 22,
                             ),
                           )),
-              ],
-            ),
-          ),
-          Spacer(),
-          SizedBox(),
-        ],
+          ],
       ),
       drawer: Mydrawer(),
       body: SafeArea(
@@ -541,6 +549,38 @@ SizedBox(height: 30,),
       ).toList(),
     );
   }
+  Future<void> checkPermission(Passwordvisibility passwordvisibility,
+      Permission permission, BuildContext context) async {
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await Geolocator.requestPermission().then((value) async {
+        permission = await Geolocator.checkPermission();
+      });
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await openAppSettings();
+    } else {
+     
+      Position position = await Geolocator.getCurrentPosition();
+
+     
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+      
+        String address =
+            "${placemarks.first.street}, ${placemarks.first.locality}";
+        print("User's address: $address");
+        passwordvisibility.setLocation(address);
+       
+      }
+    }
+  }
 
   Widget drawer() {
     return Drawer(
@@ -562,13 +602,20 @@ SizedBox(height: 30,),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pop(context);
+            onTap: ()async {
+              // FirebaseAuth.instance.signOut();
+               final SharedPreferences prefs = await SharedPreferences.getInstance(); //prefs just variable matra ho
+    await prefs.remove("isUserExist");
+
+               Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => LoginUi()),
+                                (Route<dynamic> route) => false,
+                              );
             },
           ),
         ],
       ),
     );
   }
+
 }
