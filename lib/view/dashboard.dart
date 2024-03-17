@@ -542,33 +542,5 @@ SizedBox(height: 30,),
     );
   }
 
-  Widget drawer() {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text(
-              'Welcome, ${user?.displayName ?? 'Guest'}!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
+ 
 }

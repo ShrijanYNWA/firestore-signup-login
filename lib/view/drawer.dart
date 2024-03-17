@@ -1,4 +1,5 @@
 import 'package:firebase/util/string_const.dart';
+import 'package:firebase/view/changepassword.dart';
 import 'package:firebase/view/login.dart';
 import 'package:firebase/view/navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,6 +83,15 @@ class _MydrawerState extends State<Mydrawer> {
               launch('tel:+9779860899605');
               Navigator.pop(context); // Close the drawer
             },
+          ),
+          ListTile(
+            leading: Icon(
+              FontAwesomeIcons.userLock,
+              size: 20,
+            ),
+            title: Text("Change Password"),
+            onTap: () =>
+Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(),))
           ),
           ListTile(
             leading: Icon(

@@ -10,7 +10,10 @@ class CustomForm extends StatelessWidget {
   bool obscureText;
   String? hintText;
   String? Function(String?)? validator;
-  CustomForm({super.key, this.hintText, this.onChanged, this.prefixIcon,this.keyboardType,this.suffixIcon,this.validator,this.obscureText=false});
+  TextEditingController? controller;
+
+  
+  CustomForm({super.key, this.hintText, this.onChanged, this.prefixIcon,this.keyboardType,this.suffixIcon,this.validator,this.obscureText=false,this.controller});
 
   @override
   Widget build(BuildContext context) {

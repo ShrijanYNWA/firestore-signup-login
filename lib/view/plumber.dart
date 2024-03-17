@@ -41,7 +41,7 @@ class PlumberDetails {
         distance: (map['distance'] as num?)?.toDouble() ?? 0.0,
         experience: (map['experience']) ?? 0,
         profession: (map['profession']) ?? '',
-        available: (map['available']) ?? '',
+        available: (map['available']) ?? false,
         
 
       );
