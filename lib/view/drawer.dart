@@ -31,7 +31,7 @@ class _MydrawerState extends State<Mydrawer> {
           Container(
             height: 200,
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: colorstr,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
@@ -48,10 +48,10 @@ class _MydrawerState extends State<Mydrawer> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Welcome, ${user?.displayName ?? 'Guest'}',
+                  'Welcome, ${user?.displayName ?? 'User'}',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                   ),
                 ),
               ],
@@ -94,20 +94,43 @@ class _MydrawerState extends State<Mydrawer> {
 Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(),))
           ),
           ListTile(
-            leading: Icon(
-              FontAwesomeIcons.signOutAlt,
-              size: 20,
+  leading: Icon(
+    FontAwesomeIcons.signOutAlt,
+    size: 20,
+  ),
+  title: Text('Logout'),
+  onTap: () {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Logout'),
+          content: Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
             ),
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
+            TextButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     builder: (context) => LoginUi(),
                   ),
-                  (route) => false);
-            },
-          ),
+                  (route) => false,
+                );
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  },
+)
         ],
       ),
     );

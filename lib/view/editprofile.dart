@@ -1,16 +1,20 @@
-import 'package:firebase/util/string_const.dart';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase/view/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import 'login.dart';
-import 'profile.dart';
 
 class EditProfilePage extends StatefulWidget {
   final User? user;
-  final Map<String, dynamic>? userData;
+    final Map<String, dynamic>? userData;
 
-  EditProfilePage({required this.user, this.userData});
+
+  EditProfilePage({required this.user,this.userData});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -19,76 +23,104 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
 
+
   String? _name;
   String? _email;
   String? _contact;
   String? _address;
-
+  File? _imageFile;
+  
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
     _name = widget.user?.displayName;
-    _email = widget.user?.email;
-    _contact = widget.user?.phoneNumber;
-    _address = widget.userData != null ? widget.userData!['address'] as String? ?? '' : '';
+     _email = widget.user?.email;
+     _contact = widget.user?.phoneNumber;
+    // // Initialize _address to the current user's address if available
+    // // Otherwise, set it to an empty string
+     _address = ""; // Replace this with logic to fetch user's address from Firestore
   }
+  Future<void> _loadUserData() async {
+  try {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.user!.uid) // Use widget.user!.uid to get the current user's UID
+            .get();
+
+    // Extract user data from the snapshot and assign them to variables
+    if (snapshot.exists) {
+      setState(() {
+        _name = snapshot.data()?['name'];
+        _email = snapshot.data()?['email'];
+        _contact = snapshot.data()?['contact'];
+        _address = snapshot.data()?['address'] ?? ''; // Use default value if address is null
+      });
+    } else {
+      print('User data not found');
+    }
+  } catch (e) {
+    print('Error loading user data: $e');
+  }
+}
 
   Future<void> _updateProfile() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        await user.updateProfile(displayName: _name);
-
-        if (_email != null) {
-          await user.updateEmail(_email!);
-        }
-
-        await _usersCollection.doc(user.uid).update({
-          'name': _name,
-          'email': _email,
-          'contact': _contact,
-          'address': _address,
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully')),
-        );
-
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => ProfilePage()), // Pass user here
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating profile: $e')),
-        );
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    try {
+      // Upload the image to Firebase Storage if a new image is selected
+      String? imageURL;
+      if (_imageFile != null) {
+        imageURL = await _uploadImageToStorage(_imageFile!);
       }
+
+      // Update user profile details
+      await user.updateProfile(
+        displayName: _name,
+        photoURL: imageURL != null ? imageURL : user.photoURL,
+      );
+
+      // Update user's email if it's changed
+      if (_email != null && _email != user.email) {
+        await user.updateEmail(_email!);
+      }
+
+      // Update user data in Firestore
+      await _usersCollection.doc(user.uid).update({
+        'name': _name,
+        'email': _email,
+        'contact': _contact,
+        'address': _address,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile updated successfully')),
+      );
+
+      Navigator.pop(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
     }
   }
+}
 
-  Future<void> _deleteProfile() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        await _usersCollection.doc(user.uid).delete();
-        await user.delete();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile deleted successfully')),
-        );
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginUi()),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting profile: $e')),
-        );
-      }
+  Future<String?> _uploadImageToStorage(File file) async {
+    try {
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('profile_images/${DateTime.now().millisecondsSinceEpoch}');
+      firebase_storage.UploadTask uploadTask = ref.putFile(file);
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+      return await taskSnapshot.ref.getDownloadURL();
+    } catch (e) {
+      print('Error uploading image to Firebase Storage: $e');
+      return null;
     }
   }
 
@@ -97,7 +129,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
-        backgroundColor:colorstr,
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -108,14 +139,87 @@ class _EditProfilePageState extends State<EditProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(widget.user?.photoURL ?? ""),
+                 backgroundImage: _imageFile != null
+    ? FileImage(_imageFile!) as ImageProvider<Object>
+    : (widget.user?.photoURL != null
+        ? NetworkImage(widget.user!.photoURL!) as ImageProvider<Object>
+        : AssetImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjkDmT4fzz9xWxlF77TzA_fCinEC1OKypgPlaphkXU-Q&s') as ImageProvider<Object>), // Provide a placeholder image asset path
+ // Provide a placeholder image asset path
+
                   radius: 75,
                 ),
                 SizedBox(height: 20),
-                buildProfileField("Name", _name, (value) => _name = value),
-                buildProfileField("Email", _email, (value) => _email = value),
-                buildProfileField("Contact", _contact, (value) => _contact = value),
-                buildProfileField("Address", _address, (value) => _address = value),
+                TextFormField(
+                  initialValue: _name,
+                  onChanged: (value) {
+                    setState(() {
+                      _name = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _email,
+                  onChanged: (value) {
+                    setState(() {
+                      _email = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _contact,
+                  onChanged: (value) {
+                    setState(() {
+                      _contact = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Contact',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _address,
+                  onChanged: (value) {
+                    setState(() {
+                      _address = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Open image picker to choose an image from gallery
+                    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+
+                    if (pickedFile != null) {
+                      setState(() {
+                        _imageFile = File(pickedFile.path);
+                      });
+
+                      // Upload the image to Firebase Storage and get the download URL
+                      String? imageURL = await _uploadImageToStorage(_imageFile!);
+
+                      if (imageURL != null) {
+                        // Update the user's profile with the new photo URL
+                        await FirebaseAuth.instance.currentUser?.updateProfile(photoURL: imageURL);
+                      }
+                    } else {
+                      print('No image selected.');
+                    }
+                  },
+                  child: Text('Choose Image'),
+                ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
@@ -123,21 +227,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       _updateProfile();
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary:colorstr,
-                  ),
                   child: Text('Update Profile'),
                 ),
-                SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    _deleteProfile();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                  ),
-                  child: Text('Delete Profile'),
-                ),
+  onPressed: () async {
+    _deleteProfile();
+  },
+  style: ElevatedButton.styleFrom(
+    primary: Colors.red,
+  ),
+  child: Text('Delete Profile'),
+),
+
               ],
             ),
           ),
@@ -145,25 +246,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+  Future<void> _deleteProfile() async {
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    try {
+      // Prompt the user to reauthenticate before deleting the profile
+      // You can use various reauthentication methods such as email/password, phone number, etc.
+      // Here, we use email/password reauthentication for demonstration purposes
+     // AuthCredential credential = EmailAuthProvider.credential(); // Replace 'password' with the user's password
 
-  Widget buildProfileField(String label, String? value, ValueChanged<String?> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextFormField(
-        initialValue: value,
-        onChanged: onChanged,
-        style: TextStyle(fontSize: 18),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(fontSize: 16, color:colorstr),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color:colorstr),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color:colorstr, width: 2),
-          ),
-        ),
-      ),
-    );
+      // Reauthenticate user with the provided credential
+    //  await user.reauthenticateWithCredential(credential);
+
+      // Once reauthentication is successful, proceed with profile deletion
+
+      // Delete user data from Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+      
+      // Delete user from Firebase Auth
+      await user.delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile deleted successfully')),
+      );
+
+      // Navigate to login screen after deleting profile
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginUi(),), (route) => false);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting profile: $e')),
+      );
+    }
   }
+}
+
 }

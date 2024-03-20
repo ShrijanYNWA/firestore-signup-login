@@ -61,7 +61,7 @@ class _LoginUiState extends State<LoginUi> {
           child: Image(image: AssetImage("asset/images/logo.png")),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.52,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -136,11 +136,26 @@ class _LoginUiState extends State<LoginUi> {
                       height: 15,
                     ),
                     CustomForm(
+                      obscureText:
+                  passwordVisibility.showPassword  ? false : true,
+              suffixIcon: passwordVisibility.showPassword 
+                  ? IconButton(
+                      onPressed: () {
+                        passwordVisibility.Visibility(false);
+                        
+                      },
+                      icon: const Icon(Icons.visibility))
+                  : IconButton(
+                      onPressed: () {
+                        passwordVisibility.Visibility(true);
+                      },
+                      icon: const Icon(Icons.visibility_off)),
                       hintText: passwordStr,
                       prefixIcon: Icon(
                         Icons.lock,
                         color: colorstr,
                       ),
+                      
                       validator: (value) {
                         if (value!.isEmpty) {
                           return passwordValidationStr;
@@ -150,6 +165,7 @@ class _LoginUiState extends State<LoginUi> {
                         }
                         return null;
                       },
+                      
                       onChanged: (value) {
                         passwordVisibility.password = value;
                       },
@@ -167,7 +183,6 @@ class _LoginUiState extends State<LoginUi> {
                               passwordVisibility.email!,
                               passwordVisibility.password!,
                             );
-
                             if (user != null) {
                               Helper.snackBarMessage("Successfully Logged in", context);
                               Navigator.of(context).pushAndRemoveUntil(

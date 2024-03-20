@@ -45,7 +45,7 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   carousel_slider: ^4.2.1
   dotted_border: ^2.1.0
-  image_picker: ^1.0.5
+  image_picker: ^0.8.4+2  # Use the latest version available
   firebase_storage: ^11.5.6
   firebase_auth: ^4.16.0
   google_sign_in: ^6.1.6
@@ -57,6 +57,8 @@ dependencies:
   geocoding: ^2.2.0
   google_maps_flutter: ^2.5.3
   permission_handler: ^11.0.1
+  path_provider: ^2.1.2
+  map_launcher: ^3.2.0
 
 dev_dependencies:
   flutter_test:

@@ -11,7 +11,12 @@ import 'package:firebase/view/see_all.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
+import '../provider/passwordvisibility.dart';
 import 'mainUI.dart';
 
 class Dashboard extends StatefulWidget {
@@ -34,6 +39,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+      var provider=Provider.of<Passwordvisibility>(context, listen: false);
+        checkPermission(provider,Permission.location, context);
     user = FirebaseAuth.instance.currentUser;
   }
 
@@ -43,19 +50,26 @@ class _DashboardState extends State<Dashboard> {
 
 
       appBar: AppBar(
+        foregroundColor: Colors.white,
         backgroundColor: colorstr,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(left: 75.0),
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Text(
+          Row( 
+            
+            
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                          width: MediaQuery.of(context).size.width*0.6,
+                    
+                    child: Text(
                       "Welcome,",
                       style: TextStyle(color: Colors.white, fontSize: 22),
                     ),
-                    Row(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15,right: 15),
+                    child: Row(
                       children: [
                         Icon(
                           Icons.waving_hand_outlined,
@@ -65,31 +79,40 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: width(0.02, context),
                         ),
-                        Text("${user?.displayName ?? 'User'}", //welcome wala part
-
-                            style: TextStyle(fontSize: 15, color: Colors.white))
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width*0.6,
+                          child: Text("${user?.displayName ?? 'User'}", //welcome wala part
+                          
+style: TextStyle(fontSize: 15, color: Colors.white)),
+                        )
                       ],
-                    )
-                  ],
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.4,
-                ),
-                CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: GestureDetector(
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(),)),
-                            child: Icon(
-                              FontAwesomeIcons.user,
-                              color: colorstr,
-                              size: 22,
-                            ),
-                          )),
-              ],
-            ),
+                    ),
+                  )
+                ],
+              ),
+              // SizedBox(
+              //   width: MediaQuery.of(context).size.width*0.4,
+              // ),
+            
+               SizedBox(
+                height: 50,
+                width: 50,
+                 child: GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(),)),
+                   child: CircleAvatar(
+                      backgroundImage: user?.photoURL != null &&
+                              user!.photoURL!.isNotEmpty
+                          ? NetworkImage(user!.photoURL!)
+                          : NetworkImage(
+                              ''), // Provide a placeholder image URL
+                      radius: 75,
+                    ),
+                 ),
+               ),
+            ],
           ),
-          Spacer(),
-          SizedBox(),
+        
+        
         ],
       ),
       drawer: Mydrawer(),
@@ -541,6 +564,82 @@ SizedBox(height: 30,),
       ).toList(),
     );
   }
+  Future<void> checkPermission(Passwordvisibility passwordvisibility,
+      Permission permission, BuildContext context) async {
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await Geolocator.requestPermission().then((value) async {
+        permission = await Geolocator.checkPermission();
+      });
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await openAppSettings();
+    } else {
+
+      Position position = await Geolocator.getCurrentPosition();
+
+
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+
+        String address =
+            "${placemarks.first.street}, ${placemarks.first.locality}";
+        print("User's address: $address");
+        passwordvisibility.setLocation(address);
+
+      }
+    }
+  }
+
 
  
+}
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        bool? exit = await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Exit App?'),
+              content: Text('Are you sure you want to exit the app?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // Close the dialog and return false
+                  },
+                  child: Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // Close the dialog and return true
+                  },
+                  child: Text('Yes'),
+                ),
+              ],
+            );
+          },
+        );
+        
+        // Return false if showDialog returns null or if exit is null
+        return exit ?? false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Back Button Confirmation'),
+        ),
+        body: Center(
+          child: Text('Press the back button to test'),
+        ),
+      ),
+    );
+  }
 }

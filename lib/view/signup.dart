@@ -176,18 +176,20 @@ class _StudentFormState extends State<StudentForm> {
               
               },
               obscureText:
-                  passwordVisibility.showPassword == true ? false : true,
-              suffixIcon: passwordVisibility.showPassword == true
+                  passwordVisibility.showPassword  ? false : true,
+              suffixIcon: passwordVisibility.showPassword 
                   ? IconButton(
                       onPressed: () {
                         passwordVisibility.Visibility(false);
+                        
                       },
                       icon: const Icon(Icons.visibility))
                   : IconButton(
                       onPressed: () {
                         passwordVisibility.Visibility(true);
                       },
-                      icon: const Icon(Icons.visibility_off))),
+                      icon: const Icon(Icons.visibility_off))
+                      ),
           sizedBox(20),
           CustomElevatedButton(
         onPressed: () async {

@@ -20,7 +20,7 @@ class Passwordvisibility extends ChangeNotifier{
 NetworkStatus loginStatus=NetworkStatus.idel;
 
    Visibility(bool value){
-    showPassword==value;
+    showPassword=value;
     notifyListeners();
    }
     double? _latitude;
@@ -107,6 +107,11 @@ selectedfile(value){
 imagepickloader(bool value){
 loader==value;
 notifyListeners();
+}
+String? currentLocation;
+setLocation(value){
+  currentLocation=value;
+  notifyListeners();
 }
   
 

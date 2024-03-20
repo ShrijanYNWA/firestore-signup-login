@@ -31,9 +31,9 @@ class PlumberDetailsCard extends StatelessWidget {
             ListTile(
               leading: CircleAvatar(
                 backgroundColor: colorstr,
-                // You can use an image provider for the plumber's picture
+              
                  backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDMrbabaGAWmEIwfvefFe-Wf9mYEDxeWv1Bc4QCmshjw&s"),
-                child: Text('P'), // Placeholder text or image if no picture is available
+                child: Text('P'), 
               ),
               title: Text(plumberDetails.name),
               subtitle: Column(

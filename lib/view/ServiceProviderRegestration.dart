@@ -94,8 +94,8 @@ class _ServiceProviderRegistrationState
               children: [
                 Container(
                   child: Image(
-                    image: NetworkImage(
-                        "https://firebasestorage.googleapis.com/v0/b/test-46b26.appspot.com/o/1000011063.png?alt=media&token=05757cc4-9566-4e9c-a083-2db36a91af92"),
+                    image: AssetImage(
+                        "asset/images/logo.png"),
                   ),
                   height: MediaQuery
                       .of(context)
