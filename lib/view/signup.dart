@@ -100,11 +100,15 @@ class _StudentFormState extends State<StudentForm> {
               passwordVisibility.name = p0;
             },
             validator: (value) {
-              if (value!.isEmpty) {
-                return nameValidationStr;
-              } else {
-                return null;
-              }
+               if (value == null || value.isEmpty) {
+      return "$nameValidationStr";
+    }
+    if (value.isNotEmpty &&
+        !RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+      return 'Name should be a string';
+    }
+    return null;
+
             },
           ),
           sizedBox(20),
@@ -131,13 +135,15 @@ class _StudentFormState extends State<StudentForm> {
               passwordVisibility.contact = p0;
             },
             validator: (value) {
-              if (value!.isEmpty) {
-                return contactValidationStr;
-              } else if (value.length != 10) {
-                return passwordlengthStr;
-              } else {
-                return null;
-              }
+              
+    if (value == null || value.isEmpty) {
+      return 'Contact number is required';
+    }
+    if (!RegExp(r'^98\d{8}$').hasMatch(value)) {
+      return 'Contact number is not correct';
+    }
+    return null;
+
             },
           ),
           sizedBox(20),

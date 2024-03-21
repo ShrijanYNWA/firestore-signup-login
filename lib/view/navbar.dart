@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase/util/string_const.dart';
+import 'package:firebase/view/setting.dart';
 //import 'package:firebase/view/editprofile1.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase/view/dashboard.dart';
@@ -20,7 +21,7 @@ class _NavbarState extends State<Navbar> {
   final List<Widget> _pageOptions = [
     Dashboard(),
     ProfilePage(),
-    MainUi(),
+    SettingsPage(),
    // EditProfilePage1(user: user),
   ];
   
@@ -43,7 +44,7 @@ class _NavbarState extends State<Navbar> {
         //  BottomNavigationBarItem(icon: Icons.abc),
           Icon(Icons.home,size: 30, color: colorstr,),
           Icon(Icons.person, size: 30,color: colorstr),
-          Icon(Icons.list, size: 30,color: colorstr),
+          Icon(Icons.settings, size: 30,color: colorstr),
         ],
         onTap: (index) {
           setState(() {

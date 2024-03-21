@@ -25,7 +25,6 @@ class Dashboard extends StatefulWidget {
   @override
   State<Dashboard> createState() => _DashboardState();
 }
-
 class _DashboardState extends State<Dashboard> {
   User? user;
   final List<String> imageUrl = [
@@ -35,7 +34,6 @@ class _DashboardState extends State<Dashboard> {
     "asset/images/clean.jpg",
     "asset/images/photography.jpg",
   ];
-
   @override
   void initState() {
     super.initState();
@@ -54,7 +52,6 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: colorstr,
         actions: [
           Row( 
-            
             
             children: [
               Column(
@@ -95,18 +92,27 @@ style: TextStyle(fontSize: 15, color: Colors.white)),
               // ),
             
                SizedBox(
-                height: 50,
-                width: 50,
+                height: 65,
+                width: 65,
                  child: GestureDetector(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(),)),
-                   child: CircleAvatar(
-                      backgroundImage: user?.photoURL != null &&
-                              user!.photoURL!.isNotEmpty
-                          ? NetworkImage(user!.photoURL!)
-                          : NetworkImage(
-                              ''), // Provide a placeholder image URL
-                      radius: 75,
-                    ),
+                   child: Padding(
+                     padding: const EdgeInsets.only(right:8.0),
+                     child: Container( padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        shape: BoxShape.circle
+                      ),
+                       child: CircleAvatar(
+                          backgroundImage: user?.photoURL != null &&
+                                  user!.photoURL!.isNotEmpty
+                              ? NetworkImage(user!.photoURL!)
+                              : NetworkImage(
+                                  "https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png"), // Provide a placeholder image URL
+                          radius: 75,
+                        ),
+                     ),
+                   ),
                  ),
                ),
             ],
@@ -600,46 +606,4 @@ SizedBox(height: 30,),
 
  
 }
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        bool? exit = await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Exit App?'),
-              content: Text('Are you sure you want to exit the app?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false); // Close the dialog and return false
-                  },
-                  child: Text('No'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(true); // Close the dialog and return true
-                  },
-                  child: Text('Yes'),
-                ),
-              ],
-            );
-          },
-        );
-        
-        // Return false if showDialog returns null or if exit is null
-        return exit ?? false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Back Button Confirmation'),
-        ),
-        body: Center(
-          child: Text('Press the back button to test'),
-        ),
-      ),
-    );
-  }
-}
+

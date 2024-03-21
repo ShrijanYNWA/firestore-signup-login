@@ -121,148 +121,157 @@ class _ServiceProviderRegistrationState
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
-                    child: Form(
-                      key: _formKey,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            SizedBox(height: 40),
-                            buildFormField(
-                                "Name", _nameController, namevalidate,
-                                Icons.person),
-                            buildFormField(
-                                "Contact", _contactController,
-                                validateContact, Icons.phone),
-                            buildFormField(
-                                "Location", _locationController,
-                                locationvalidator, Icons.place),
-                            buildDropdownFormField(
-                                "Profession",
-                                _selectedProfession, (value) {
-                              _selectedProfession = value;
-                            },
-                                professions,
-                                Icons.home_repair_service_sharp),
-                            buildFormField(
-                                "Experience(Years)", _experienceController,
-                                experiencevalidator, Icons.person),
-                            buildDropdownFormField(
-                                "Available",
-                                _selectedAvailable.toString(), (value) {
-                              _selectedAvailable = value == 'true';
-                            },
-                                availabilityOptions.map((bool value) => value.toString()).toList(),
-                                Icons.access_time), // Dropdown for availability
-                            SizedBox(height: 20),
-                            ElevatedButton(
-  onPressed: () async {
-    
-    if (_formKey.currentState!.validate()) {
-    
-      if (isEditing) {
-      
-        await editForm(context);
-      } else {
-        
-        await submitForm(context);
-      
-        if (!alreadyRegistered) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: Text("Form submitted successfully!"),
-              );
-            },
-          );
-        }
-      }
-    }
-  },
-                              style: ElevatedButton.styleFrom(
-                                shadowColor: colorstr.withOpacity(1),
-                                elevation: 15,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 15),
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 40),
+                              buildFormField(
+                                  "Name", _nameController, namevalidate,
+                                  Icons.person),
+                              buildFormField(
+                                  "Contact", _contactController,
+                                  validateContact, Icons.phone),
+                              buildFormField(
+                                  "Location", _locationController,
+                                  locationvalidator, Icons.place),
+                              buildDropdownFormField(
+                                  "Profession",
+                                  _selectedProfession, (value) {
+                                _selectedProfession = value;
+                              },
+                                  professions,
+                                  Icons.home_repair_service_sharp),
+                              buildFormField(
+                                  "Experience(Years)", _experienceController,
+                                  experiencevalidator, Icons.person),
+                              buildDropdownFormField(
+                                  "Available",
+                                  _selectedAvailable.toString(), (value) {
+                                _selectedAvailable = value == 'true';
+                              },
+                                  availabilityOptions.map((bool value) => value.toString()).toList(),
+                                  Icons.access_time), // Dropdown for availability
+                              SizedBox(height: 3),
+                              Row(mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(width: MediaQuery.of(context).size.width*0.5,
+                                    child: ElevatedButton(
+                                    onPressed: () async {
+                                      
+                                      if (_formKey.currentState!.validate()) {
+                                      
+                                        if (isEditing) {
+                                        
+                                          await editForm(context);
+                                        } else {
+                                          
+                                          await submitForm(context);
+                                        
+                                          if (!alreadyRegistered) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  content: Text("Form submitted successfully!"),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        }
+                                      }
+                                    },
+                                      style: ElevatedButton
+                                      .styleFrom(
+                                        backgroundColor: colorstr
+                                        // shadowColor: colorstr.withOpacity(1),
+                                        // elevation: 15,
+                                        // padding: EdgeInsets.symmetric(
+                                        //     vertical: 10, horizontal: 15),
+                                      ),
+                                      child: Text(
+                                          isEditing ? 'Save Changes' : 'Register',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color:Colors.white)),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromARGB(255, 181, 255, 185),
-                                      const Color.fromARGB(
-                                          255, 6, 96, 10)
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(50),
+                              if (isEditing && _selectedProfession != null)
+                              // Display delete button only in edit mode and when a profession is selected
+                                Row(mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width*0.5,
+                                                        height: MediaQuery.of(context).size.height*0.045,
+                    
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Handle delete logic
+                                          showDeleteConfirmationDialog(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.red,
+                                          shadowColor: Colors.red.withOpacity(1),
+                                          elevation: 15,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15),
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(50),
+                                          ),
+                                          child: Text('Delete',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: Center(
-                                  child: Text(
-                                      isEditing ? 'Save Changes' : 'Register',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Color.fromARGB(
-                                              255, 234, 226, 226))),
+                              // Display edit button only if not already editing
+                              if (!isEditing && _selectedProfession != null)
+                                Row(mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Set the form in editing mode
+                                        setState(() {
+                                          isEditing = true;
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        primary: colorstr,
+                                        shadowColor: Colors.black.withOpacity(1),
+                                        elevation: 15,
+                                         padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15)
+                                        // padding: EdgeInsets.symmetric(
+                                        //     vertical: 10, horizontal: 15),
+                                      ),
+                                      child: Container(
+                                      width: MediaQuery.of(context).size.width*0.5,
+                                                        height: MediaQuery.of(context).size.height*0.024,
+                    
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Center(
+                                          child: Text('Edit',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                            if (isEditing && _selectedProfession != null)
-                            // Display delete button only in edit mode and when a profession is selected
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Handle delete logic
-                                  showDeleteConfirmationDialog(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.red,
-                                  shadowColor: Colors.red.withOpacity(1),
-                                  elevation: 15,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Center(
-                                    child: Text('Delete',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white)),
-                                  ),
-                                ),
-                              ),
-                            // Display edit button only if not already editing
-                            if (!isEditing && _selectedProfession != null)
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Set the form in editing mode
-                                  setState(() {
-                                    isEditing = true;
-                                  });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue,
-                                  shadowColor: Colors.blue.withOpacity(1),
-                                  elevation: 15,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Center(
-                                    child: Text('Edit',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white)),
-                                  ),
-                                ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -327,14 +336,14 @@ class _ServiceProviderRegistrationState
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            prefixIcon: Icon(prefixIcon, color: Colors.black),
+            prefixIcon: Icon(prefixIcon, color: colorstr),
             labelText: label,
-            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+            labelStyle: TextStyle(fontSize: 16, color:colorstr),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 2),
+              borderSide: BorderSide(color:colorstr, width: 2),
             ),
           ),
         ),
@@ -344,18 +353,20 @@ class _ServiceProviderRegistrationState
 
 
   String? validateContact(String? value) {
+    
     if (value == null || value.isEmpty) {
-      return 'Please enter your Contact';
+      return 'Contact number is required';
     }
-    if (value.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return 'Please enter a valid 10-digit Contact';
+    if (!RegExp(r'^98\d{8}$').hasMatch(value)) {
+      return 'Contact number is not correct';
     }
     return null;
+  
   }
 
   String? namevalidate(String? value) {
     if (value == null || value.isEmpty) {
-      return "$nameValidationStr";
+      return "${nameValidationStr}";
     }
     if (value.isNotEmpty &&
         !RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
@@ -527,7 +538,7 @@ class _ServiceProviderRegistrationState
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: Text('Delete',style: TextStyle(color: Colors.red),),
               onPressed: () async {
                 await deleteRegistration(context);
               },

@@ -3,6 +3,7 @@ import 'package:firebase/view/ServiceProviderRegestration.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'editprofile.dart'; // Import your EditProfilePage
 
 class ProfilePage extends StatefulWidget {
@@ -73,25 +74,66 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (user != null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
-                  child: CircleAvatar(
-                    backgroundImage: user.photoURL != null &&
-                            user.photoURL!.isNotEmpty
-                        ? NetworkImage(user.photoURL!)
-                        : NetworkImage(
-                            'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg'), // Provide a placeholder image URL
-                    radius: 75,
-                  ),
-                ),
+           Center(
+  child: Stack(
+    children: [
+                      if(user!=null)
+
+      Container(
+            padding: EdgeInsets.all(5.0), // 
+
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: const Color.fromRGBO(156, 39, 176, 1),
+            width: 3.0,
+
+          ),
+          
+        
+        ),
+        child:
+        
+         CircleAvatar(
+          
+          backgroundImage: user.photoURL != null &&
+                  user.photoURL!.isNotEmpty
+              ? NetworkImage(user.photoURL!)
+              : NetworkImage(
+                  'https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png'), // Provide a placeholder image URL
+          radius: 75,
+        ),
+      ),
+      Positioned(
+        bottom: 10,
+        right: 5,
+        child: IconButton(
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    EditProfilePage(user: user, userData: userData),
               ),
+            ).then((_) {
+              // Update user data after returning from the EditProfilePage
+              fetchUserData();
+            });
+          },
+          icon: Icon(FontAwesomeIcons.solidEdit,),focusColor: Colors.purple,hoverColor: colorstr,highlightColor: Colors.purple,
+          color: Colors.purple,
+          // Adjust the size of the icon as needed
+          iconSize: 20,
+        ),
+      ),
+    ],
+  ),
+),
+
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: Center(
-                  child:
-                      Text("Profile Details", style: TextStyle(fontSize: 30))),
+                  child: Text("Profile Details", style: TextStyle(fontSize: 30))),
             ),
             SizedBox(height: 20),
             buildProfileField("Name:", userData?['name'] ?? 'N/A'),
@@ -103,34 +145,38 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: colorstr, onPrimary: Colors.white),
-                    onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditProfilePage(user: user, userData: userData),
-                        ),
-                      ).then((_) {
-                        // Update user data after returning from the EditProfilePage
-                        fetchUserData();
-                      });
-                    },
-                    child: Text('Edit Profile'),
-                  ),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: colorstr, onPrimary: Colors.white),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ServiceProviderRegistration(),
-                          )),
-                      child: Text(
-                        "Register as service provider",
-                      ))
+                  // ElevatedButton(
+                  //   style: ElevatedButton.styleFrom(
+                  //       primary: colorstr, onPrimary: Colors.white),
+                  //   onPressed: () async {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) =>
+                  //             EditProfilePage(user: user, userData: userData),
+                  //       ),
+                  //     ).then((_) {
+                  //       // Update user data after returning from the EditProfilePage
+                  //       fetchUserData();
+                  //     });
+                  //   },
+                    
+                  //  child: Text('Edit Profile'),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 142.42),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: colorstr, onPrimary: Colors.white),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServiceProviderRegistration(),
+                            )),
+                        child: Text(
+                          "Register as service provider",
+                        )),
+                  )
                 ],
               ),
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatelessWidget {
+class WillPopScopes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import '../util/string_const.dart';
 import 'login.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -140,17 +141,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 CircleAvatar(
                  backgroundImage: _imageFile != null
-    ? FileImage(_imageFile!) as ImageProvider<Object>
+    ? FileImage(_imageFile!)
     : (widget.user?.photoURL != null
         ? NetworkImage(widget.user!.photoURL!) as ImageProvider<Object>
-        : AssetImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjkDmT4fzz9xWxlF77TzA_fCinEC1OKypgPlaphkXU-Q&s') as ImageProvider<Object>), // Provide a placeholder image asset path
- // Provide a placeholder image asset path
+        : NetworkImage('https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png')),
 
                   radius: 75,
                 ),
                 SizedBox(height: 20),
                 TextFormField(
                   initialValue: _name,
+                  validator:(value) {
+                     if (value == null || value.isEmpty) {
+      return "${nameValidationStr}";
+    }
+    if (value.isNotEmpty &&
+        !RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+      return 'Name should be a string';
+    }
+    return null;
+  
+                  }, 
                   onChanged: (value) {
                     setState(() {
                       _name = value;
@@ -175,6 +186,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 SizedBox(height: 10),
                 TextFormField(
                   initialValue: _contact,
+                   validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Contact number is required';
+    }
+    if (!RegExp(r'^98\d{8}$').hasMatch(value)) {
+      return 'Contact number is not correct';
+    }
+    return null;
+  },
                   onChanged: (value) {
                     setState(() {
                       _contact = value;
@@ -231,7 +251,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 ElevatedButton(
   onPressed: () async {
-    _deleteProfile();
+    deleteProfile();
   },
   style: ElevatedButton.styleFrom(
     primary: Colors.red,
@@ -246,7 +266,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
-  Future<void> _deleteProfile() async {
+  Future<void> deleteProfile() async {
   final User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     try {

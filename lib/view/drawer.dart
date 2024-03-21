@@ -2,6 +2,7 @@ import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/changepassword.dart';
 import 'package:firebase/view/login.dart';
 import 'package:firebase/view/navbar.dart';
+import 'package:firebase/view/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -40,11 +41,19 @@ class _MydrawerState extends State<Mydrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  backgroundImage: user?.photoURL != null
-                      ? NetworkImage(user!.photoURL!)
-                      : NetworkImage("https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg") , // Add your default image path
-                  radius: 50,
+                Container(
+                    padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      
+                        border: Border.all(color: Colors.white),
+                        shape: BoxShape.circle
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: user?.photoURL != null
+                        ? NetworkImage(user!.photoURL!)
+                        : NetworkImage("https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png") , // Add your default image path
+                    radius: 50,
+                  ),
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -73,8 +82,8 @@ class _MydrawerState extends State<Mydrawer> {
               size: 20,
             ),
             title: Text("About Us"),
-            // onTap: () =>
-            // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ,), (route) => false),
+            onTap: () =>
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>AboutAppPage() ,), (route) => false),
           ),
           ListTile(
             leading: Icon(Icons.phone, size: 20),
@@ -84,15 +93,15 @@ class _MydrawerState extends State<Mydrawer> {
               Navigator.pop(context); // Close the drawer
             },
           ),
-          ListTile(
-            leading: Icon(
-              FontAwesomeIcons.userLock,
-              size: 20,
-            ),
-            title: Text("Change Password"),
-            onTap: () =>
-Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(),))
-          ),
+//           ListTile(
+//             leading: Icon(
+//               FontAwesomeIcons.userLock,
+//               size: 20,
+//             ),
+//             title: Text("Change Password"),
+//             onTap: () =>
+// Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(),))
+//           ),
           ListTile(
   leading: Icon(
     FontAwesomeIcons.signOutAlt,

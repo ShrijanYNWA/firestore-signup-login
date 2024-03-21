@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
 import 'package:firebase/util/string_const.dart';
 import 'package:firebase/view/UploadImage.dart';
+import 'package:firebase/view/WillPopScope.dart';
 import 'package:firebase/view/admin.dart';
 import 'package:firebase/view/carousel.dart';
 import 'package:firebase/view/circle.dart';
@@ -12,6 +13,7 @@ import 'package:firebase/view/drawer.dart';
 import 'package:firebase/view/forgetpassword.dart';
 import 'package:firebase/view/haversine.dart';
 import 'package:firebase/view/searchpage.dart';
+import 'package:firebase/view/setting.dart';
 import 'package:firebase/view/splashscreen.dart';
 import 'package:firebase/view/userlocation.dart';
 import 'package:firebase/view/locationplumber.dart';
@@ -22,8 +24,6 @@ import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/profile.dart';
 import 'package:firebase/view/see_all.dart';
 import 'package:firebase/view/signup.dart';
-import 'package:firebase/view/test.dart';
-import 'package:firebase/view/testloginwithg.dart';
 import 'package:firebase/view/upload.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -92,9 +92,11 @@ ChangeNotifierProvider<Passwordvisibility>(create: (context) => Passwordvisibili
             colorScheme: ColorScheme.fromSeed(seedColor:colorstr),
             useMaterial3: true,
           ),
-          home: SplashScreen()
+          home:
+         SplashScreen()
+          // WillPopScopes()
               //isUserExist? Dashboard():LoginUi(),
-       
+      // SettingsPage()
         ),
       
     );
@@ -243,7 +245,6 @@ print(message);
       print('Error fetching user location: $e');
     }
   }
-
   double _calculateHaversineDistance(double startLatitude,
       double startLongitude, double endLatitude, double endLongitude) {
     const double radius = 6371.0; // Earth's radius in kilometers
@@ -327,17 +328,17 @@ print(message);
         // Append ", Nepal" to the location name
         String locationNameNepal = '$locationName, Nepal';
 
-        // Add "Cooma, Nepal" to the location name
+      
         String locationNameCoomaNepal = '$locationNameNepal';
 
-        // Find the longitude and latitude for the modified location name
+      
         List<Location> locations = await locationFromAddress(locationNameCoomaNepal);
 
         if (locations.isNotEmpty) {
           double latitude = locations.first.latitude;
           double longitude = locations.first.longitude;
 
-          // Update the Firestore document with latitude and longitude
+        
           await FirebaseFirestore.instance.collection("plumber").doc(plumberDocument.id).update({
             'latitude': latitude,
             'longitude': longitude,
