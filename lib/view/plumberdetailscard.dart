@@ -35,7 +35,7 @@ class PlumberDetailsCard extends StatelessWidget {
                  backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDMrbabaGAWmEIwfvefFe-Wf9mYEDxeWv1Bc4QCmshjw&s"),
                 child: Text('P'), 
               ),
-              title: Text(plumberDetails.name),
+              title: Text(plumberDetails.name,style: TextStyle(fontWeight: FontWeight.w500),),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -51,15 +51,15 @@ class PlumberDetailsCard extends StatelessWidget {
                       Text(' ${plumberDetails.location}(${plumberDetails.distance.toStringAsFixed(2)} km away)'),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Text("Rating:"),
-                      StarRating(
-                        starCount: 5,
-                        rating: plumberDetails.rating.toInt(),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Text("Rating:"),
+                  //     StarRating(
+                  //       starCount: 5,
+                  //       rating: plumberDetails.rating.toInt(),
+                  //     ),
+                  //   ],
+                  // ),
                   Row(
                     children: [
                       Icon(Icons.phone, color: Colors.green),

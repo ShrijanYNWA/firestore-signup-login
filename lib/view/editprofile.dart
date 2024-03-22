@@ -41,16 +41,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _name = widget.user?.displayName;
      _email = widget.user?.email;
      _contact = widget.user?.phoneNumber;
-    // // Initialize _address to the current user's address if available
-    // // Otherwise, set it to an empty string
-     _address = ""; // Replace this with logic to fetch user's address from Firestore
+     _address = ""; 
   }
   Future<void> _loadUserData() async {
   try {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(widget.user!.uid) // Use widget.user!.uid to get the current user's UID
+            .doc(widget.user!.uid)
             .get();
 
     // Extract user data from the snapshot and assign them to variables
@@ -129,6 +127,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
+        backgroundColor: colorstr,
         title: Text('Edit Profile'),
       ),
       body: SingleChildScrollView(
@@ -139,17 +139,69 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                 backgroundImage: _imageFile != null
-    ? FileImage(_imageFile!)
-    : (widget.user?.photoURL != null
-        ? NetworkImage(widget.user!.photoURL!) as ImageProvider<Object>
-        : NetworkImage('https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png')),
+                Stack(
+  children: [
+    Container(
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorstr,width: 3),
+        shape: BoxShape.circle
+      ),
+             child: CircleAvatar(
+        
+        backgroundImage: _imageFile != null
+            ? FileImage(_imageFile!)
+            : (widget.user?.photoURL != null
+                ? NetworkImage(widget.user!.photoURL!) as ImageProvider<Object>
+                : NetworkImage('https://icons.veryicon.com/png/o/miscellaneous/wizhion/person-20.png')),
+        radius: 75,
+        backgroundColor: Colors.grey[200], // Add background color for border
+      ),
+    ),
+    Positioned(
+      right: 0,
+      bottom: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.green[50],
+        ),
+        child: IconButton(
+          icon: Icon(Icons.camera_alt),
+          focusColor: Colors.purple,hoverColor: colorstr,highlightColor: Colors.purple,
+          color: colorstr,
+          onPressed: () 
+            async {
+                    // Open image picker to choose an image from gallery
+                    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
 
-                  radius: 75,
-                ),
+                    if (pickedFile != null) {
+                      setState(() {
+                        _imageFile = File(pickedFile.path);
+                      });
+
+                      // Upload the image to Firebase Storage and get the download URL
+                      String? imageURL = await _uploadImageToStorage(_imageFile!);
+
+                      if (imageURL != null) {
+                        // Update the user's profile with the new photo URL
+                        await FirebaseAuth.instance.currentUser?.updateProfile(photoURL: imageURL);
+                      }
+                    } else {
+                      print('No image selected.');
+                    }
+                  },
+
+          
+        ),
+      ),
+    ),
+  ],
+),
+
                 SizedBox(height: 20),
                 TextFormField(
+              
                   initialValue: _name,
                   validator:(value) {
                      if (value == null || value.isEmpty) {
@@ -168,6 +220,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     });
                   },
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                     labelText: 'Name',
                   ),
                 ),
@@ -180,6 +233,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     });
                   },
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+
                     labelText: 'Email',
                   ),
                 ),
@@ -201,6 +256,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     });
                   },
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+
                     labelText: 'Contact',
                   ),
                 ),
@@ -213,35 +270,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     });
                   },
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+
                     labelText: 'Address',
                   ),
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Open image picker to choose an image from gallery
-                    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+             Row(
+             children: [
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(primary: colorstr,onPrimary: Colors.white),
+                //   onPressed: () async {
+                //     // Open image picker to choose an image from gallery
+                //     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
 
-                    if (pickedFile != null) {
-                      setState(() {
-                        _imageFile = File(pickedFile.path);
-                      });
+                //     if (pickedFile != null) {
+                //       setState(() {
+                //         _imageFile = File(pickedFile.path);
+                //       });
 
-                      // Upload the image to Firebase Storage and get the download URL
-                      String? imageURL = await _uploadImageToStorage(_imageFile!);
+                //       // Upload the image to Firebase Storage and get the download URL
+                //       String? imageURL = await _uploadImageToStorage(_imageFile!);
 
-                      if (imageURL != null) {
-                        // Update the user's profile with the new photo URL
-                        await FirebaseAuth.instance.currentUser?.updateProfile(photoURL: imageURL);
-                      }
-                    } else {
-                      print('No image selected.');
-                    }
-                  },
-                  child: Text('Choose Image'),
-                ),
+                //       if (imageURL != null) {
+                //         // Update the user's profile with the new photo URL
+                //         await FirebaseAuth.instance.currentUser?.updateProfile(photoURL: imageURL);
+                //       }
+                //     } else {
+                //       print('No image selected.');
+                //     }
+                //   },
+                //   child: Text('Choose Image'),
+                // ),
+                
                 SizedBox(height: 20),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: colorstr,onPrimary: Colors.white),
+
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _updateProfile();
@@ -249,15 +314,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   },
                   child: Text('Update Profile'),
                 ),
-                ElevatedButton(
-  onPressed: () async {
-    deleteProfile();
-  },
-  style: ElevatedButton.styleFrom(
-    primary: Colors.red,
-  ),
-  child: Text('Delete Profile'),
-),
+             ]
+             )
+//                 ElevatedButton(
+//   onPressed: () async {
+//     deleteProfile();
+//   },
+//   style: ElevatedButton.styleFrom(
+//     primary: Colors.red,
+//   ),
+//   child: Text('Delete Profile'),
+// ),
 
               ],
             ),

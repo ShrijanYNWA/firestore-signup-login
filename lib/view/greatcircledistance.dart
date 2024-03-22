@@ -19,6 +19,7 @@ import 'dart:math';
         cos(lat1Rad) * cos(lat2Rad) * sin(dLon / 2) * sin(dLon / 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = R * c;
+    
 
     return distance;
   }

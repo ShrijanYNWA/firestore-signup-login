@@ -43,7 +43,7 @@ class _PlumberDetailsScreenState extends State<PlumberDetailsScreen> {
               Text('${widget.plumberDetails.name}',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
               Text(
-                  '${widget.plumberDetails.profession} ,  ${widget.plumberDetails.experience} years experience ',
+                  '${widget.plumberDetails.profession} ,  ${widget.plumberDetails.experience} years experience ',maxLines: 1,overflow:TextOverflow.fade ,
                   style: TextStyle(
                       fontSize: 20, color: Color.fromARGB(255, 0, 94, 170))),
               Row(
@@ -137,11 +137,11 @@ class _PlumberDetailsScreenState extends State<PlumberDetailsScreen> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.location_on,color: Color.fromARGB(255, 0, 94, 170),),
-                    Text('${widget.plumberDetails.location}(${widget.plumberDetails.distance.toStringAsFixed(2)} km away)',
+                  Icon(Icons.location_on,color: Color.fromARGB(255, 0, 94, 170),),
+                    Text('${widget.plumberDetails.location}(${widget.plumberDetails.distance.toStringAsFixed(2)} km away)',maxLines: 1,overflow:TextOverflow.clip,
                         style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500, color:Color.fromARGB(255, 0, 94, 170))),
                  Spacer(),
-                 Icon(FontAwesomeIcons.locationCrosshairs,color:  Color.fromARGB(255, 0, 94, 170) ,),
+                 Expanded(child: Icon(FontAwesomeIcons.locationCrosshairs,color:  Color.fromARGB(255, 0, 94, 170) , )),
                  
                   ],
                 ),

@@ -64,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: Text(
           "Profile",
         ),
@@ -85,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: const Color.fromRGBO(156, 39, 176, 1),
+            color: colorstr,
             width: 3.0,
 
           ),
@@ -105,25 +106,31 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       Positioned(
-        bottom: 10,
-        right: 5,
-        child: IconButton(
-          onPressed: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    EditProfilePage(user: user, userData: userData),
-              ),
-            ).then((_) {
-              // Update user data after returning from the EditProfilePage
-              fetchUserData();
-            });
-          },
-          icon: Icon(FontAwesomeIcons.solidEdit,),focusColor: Colors.purple,hoverColor: colorstr,highlightColor: Colors.purple,
-          color: Colors.purple,
-          // Adjust the size of the icon as needed
-          iconSize: 20,
+        bottom: 0,
+        right: 0,
+        child: Container(
+           decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color:  Colors.green[50],
+        ),
+          child: IconButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      EditProfilePage(user: user, userData: userData),
+                ),
+              ).then((_) {
+                // Update user data after returning from the EditProfilePage
+                fetchUserData();
+              });
+            },
+            icon: Icon(FontAwesomeIcons.solidEdit,),focusColor: Colors.purple,hoverColor: colorstr,highlightColor: Colors.purple,
+            color: colorstr,
+            // Adjust the size of the icon as needed
+            iconSize: 20,
+          ),
         ),
       ),
     ],
@@ -145,6 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  SizedBox(height: MediaQuery.of(context).size.height*0.07,),
                   // ElevatedButton(
                   //   style: ElevatedButton.styleFrom(
                   //       primary: colorstr, onPrimary: Colors.white),
@@ -163,20 +171,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     
                   //  child: Text('Edit Profile'),
                   // ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 142.42),
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: colorstr, onPrimary: Colors.white),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServiceProviderRegistration(),
-                            )),
-                        child: Text(
-                          "Register as service provider",
-                        )),
-                  )
+                  SizedBox(),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: colorstr, onPrimary: Colors.white),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ServiceProviderRegistration(),
+                          )),
+                      child: Text(
+                        "Register as service provider",
+                      ))
                 ],
               ),
             ),
