@@ -48,7 +48,7 @@ class PlumberDetailsCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.location_on, color: Colors.blue),
-                      Text(' ${plumberDetails.location}(${plumberDetails.distance.toStringAsFixed(2)} km)'),
+                      Text(' ${plumberDetails.location}(${plumberDetails.distance.toStringAsFixed(2)} km away)'),
                     ],
                   ),
                   Row(

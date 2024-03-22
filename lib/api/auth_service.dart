@@ -7,7 +7,7 @@ class AuthService {
   // Reference to the Firestore collection
   final CollectionReference<Map<String, dynamic>> _usersCollection =
       FirebaseFirestore.instance.collection('users');
-
+      
   // Sign in with email and password
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
