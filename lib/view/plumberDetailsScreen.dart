@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase/provider/passwordvisibility.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +15,10 @@ import '../view/plumber.dart';
 class PlumberDetailsScreen extends StatefulWidget {
   final PlumberDetails plumberDetails;
   bool isPressed = false;
+  
+   TextEditingController? reviewController; // Define reviewController
+  List<String> reviews = []; // Define the reviews list
+
 
   PlumberDetailsScreen(this.plumberDetails);
 
@@ -20,6 +28,15 @@ class PlumberDetailsScreen extends StatefulWidget {
 
 class _PlumberDetailsScreenState extends State<PlumberDetailsScreen> {
   bool isPressed = false;
+    @override
+  void initState() {
+    super.initState();
+      widget.reviewController = TextEditingController();
+
+    widget.reviewController =
+        TextEditingController(); // Initialize reviewController
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -153,15 +170,146 @@ class _PlumberDetailsScreenState extends State<PlumberDetailsScreen> {
               SizedBox(
                 height: 5
               ),
-
-              Text(
+                          Text(
   widget.plumberDetails.available ? "Currently Available" : "Sorry, Currently Unavailable",
   style: TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: widget.plumberDetails.available ? Colors.green : Colors.red,
   ),
-)
+),
+              SizedBox(height: 20),
+
+              Text(
+                "Rate this provider:",
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 0,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemSize: 30,
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color:colorstr,
+                ),
+                onRatingUpdate: (rating) {
+                  // Store the rating in Firestore
+                  storeRating(rating);
+                },
+              ),
+
+
+  
+  // Display Reviews Section
+              SizedBox(height: 20),
+              Text(
+                "Reviews:",
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              // StreamBuilder to listen to changes in the reviews collection
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('reviews')
+                    .where('plumberId', isEqualTo: widget.plumberDetails.userId)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (snapshot.hasData) {
+                    List<DocumentSnapshot> documents = snapshot.data!.docs;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: documents.map((doc) {
+                        String userId = doc['userId'] ??
+                            'Unknown User'; 
+                      
+                    
+                            // Handle null userId
+                        // Display each review and the user who gave it
+                        return Row(
+                          
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: Container(
+                                 padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.01),
+                                                width: MediaQuery.of(context).size.width*0.9,
+                                                decoration: BoxDecoration(border: Border.all(color: Colors.transparent),
+                                                color: Colors.black12,
+                                                borderRadius: BorderRadius.circular(10)
+                                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      userId,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: colorstr),
+                                    ),
+                              // Text(
+                              //   doc['date'] != null ? DateFormat('MMMM d, y').format(doc['date'].toDate()) : '',
+                              //   style: TextStyle(fontWeight: FontWeight.bold),
+                              // ),
+                              
+                              
+                              
+                              
+                                    SizedBox(height: MediaQuery.of(context).size.height*0.009,),
+                                //    SizedBox(height: 5),
+                                    Text(
+                                      '"${doc['review']}"',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 10),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    );
+                  }
+                  return SizedBox();
+                },
+              ),
+
+              // Add Review Section
+              SizedBox(height: 20),
+              Text(
+                "Add Your Review:",
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: widget.reviewController,
+                decoration: InputDecoration(
+                  hintText: 'Write your review here...',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(primary: colorstr,onPrimary: Colors.white),
+                onPressed: () {
+                  // Function to add the review to Firestore
+                  addReview(widget.reviewController!.text);
+                },
+                child: Text('Submit Review'),
+              ),
+          
+
     
               // SizedBox(height: 10),
               // Text('Contact: ${widget.plumberDetails.contact}',
@@ -249,4 +397,42 @@ print(endLocations);
       throw 'Could not launch $phoneNumber';
     }
   }
+  void storeRating(double rating) {
+    // Store the rating in Firestore
+    FirebaseFirestore.instance.collection("ratings").add({
+      "plumberId":
+          widget.plumberDetails.userId, // Use plumber's ID as identifier
+      "contact": widget.plumberDetails.contact, // Include plumber's contact
+      "userId": "currentUserId", // Replace with the current user's ID
+      "rating": rating,
+    }).then((value) {
+      print("Rating added successfully");
+    }).catchError((error) {
+      print("Failed to add rating: $error");
+    });
+  }
+
+ void addReview(String review) {
+  // Get the current date/time
+  DateTime currentDate = DateTime.now();
+DateTime dateOnly = DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+  
+  // Add the review to the Firestore collection along with the current date/time
+  String userName = FirebaseAuth.instance.currentUser?.displayName ?? 'User';
+  FirebaseFirestore.instance.collection('reviews').add({
+    'plumberId': widget.plumberDetails.userId,
+    'review': review,
+    'userId': userName,
+    'date': dateOnly, // Include the current date
+  }).then((value) {
+    // Clear the review input field after submitting
+    widget.reviewController!.clear();
+    print('Review added successfully');
+  }).catchError((error) {
+    print('Failed to add review: $error');
+  });
+}
+
+
 }

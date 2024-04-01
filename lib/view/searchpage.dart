@@ -149,7 +149,6 @@ class _SearchPageState extends State<SearchPage> {
                           plumberDetailsList.add(plumberDetails);
                         }
                       });
-
                       // Sort plumber details by distance (smallest distance first)
                       plumberDetailsList
                           .sort((a, b) => a.distance.compareTo(b.distance));

@@ -1,18 +1,21 @@
 //import 'package:firebase/view/plumber.dart';
 //import 'package:firebase/view/plumberDetailsScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase/view/plumber.dart';
 import 'package:firebase/view/plumberDetailsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../util/string_const.dart';
 
 class PlumberDetailsCard extends StatelessWidget {
   
   final PlumberDetails plumberDetails;
-  
+    final Map<String, dynamic>? userData; // Define userData here
 
-  PlumberDetailsCard(this.plumberDetails);
+
+  PlumberDetailsCard(this.plumberDetails, {this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +34,50 @@ class PlumberDetailsCard extends StatelessWidget {
             ListTile(
               leading: CircleAvatar(
                 backgroundColor: colorstr,
-              
-                 backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDMrbabaGAWmEIwfvefFe-Wf9mYEDxeWv1Bc4QCmshjw&s"),
+              radius: 35,
+                 backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDMrbabaGAWmEIwfvefFe-Wf9mYEDxeWv1Bc4QCmshjw&s",),
                 child: Text('P'), 
               ),
-              title: Text(plumberDetails.name,style: TextStyle(fontWeight: FontWeight.w500),),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(plumberDetails.name,style: TextStyle(fontWeight: FontWeight.w500),),
+                   FutureBuilder(
+                    future: getAverageRating(plumberDetails.userId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        double rating = snapshot.data as double;
+                        return RatingBar.builder(
+                          onRatingUpdate: (value) {},
+                          initialRating: rating.toDouble(),
+                          minRating: 0,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemSize: 20,
+                          ignoreGestures: true,
+                          itemBuilder: (context, _) => Icon(
+                            Icons.star,
+                            color: colorstr,
+                          ),
+                        );
+                      }
+                    },
+                  )
+                ],
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                     
-                      Text(' (${plumberDetails.profession} )', style: TextStyle(fontSize: 15),),
+                      Text(' ( ${plumberDetails.profession} )', style: TextStyle(fontSize: 15),),
+                      
                     ],
                   ),
                   Row(
@@ -51,15 +86,20 @@ class PlumberDetailsCard extends StatelessWidget {
                       Text(' ${plumberDetails.location}(${plumberDetails.distance.toStringAsFixed(2)} km away)'),
                     ],
                   ),
-                  // Row(
-                  //   children: [
-                  //     Text("Rating:"),
-                  //     StarRating(
-                  //       starCount: 5,
-                  //       rating: plumberDetails.rating.toInt(),
-                  //     ),
-                  //   ],
-                  // ),
+//                   Row(
+//   children: [
+//     Text("Rating:"),
+//     StarRating(
+//       starCount: 5,
+//       initialRating: plumberDetails.rating.toDouble(), // Use the rating from plumberDetails
+//       onRatingChanged: (newRating) {
+//         // Implement logic to update the rating in Firestore when the user changes the rating
+//         // You can use the plumberDetails document's ID or any other unique identifier as the userId
+//         updateRatingInFirestore(newRating, plumberDetails.userId);
+//       }, userId: '',
+//     ),
+//   ],
+// ),
                   Row(
                     children: [
                       Icon(Icons.phone, color: Colors.green),
@@ -77,7 +117,7 @@ class PlumberDetailsCard extends StatelessWidget {
                     statusText,
                     style: TextStyle(color: statusColor, fontWeight: FontWeight.bold),
                   ),
-                  
+                   
                 ],
               ),
             ),
@@ -87,4 +127,22 @@ class PlumberDetailsCard extends StatelessWidget {
 
     );
   }
+
+
+ Future<double> getAverageRating(String plumberId) async {
+    QuerySnapshot ratingSnapshot = await FirebaseFirestore.instance
+        .collection('ratings')
+        .where("plumberId", isEqualTo: plumberId)
+        .get();
+    double totalRating = 0;
+    int ratingCount = 0;
+    for (QueryDocumentSnapshot doc in ratingSnapshot.docs) {
+      if (doc['rating'] != null && doc['rating'] is double) {
+        totalRating += doc['rating'] as double;
+        ratingCount++;
+      }
+    }
+    return ratingCount > 0 ? totalRating / ratingCount : 0;
+  }
+
 }
